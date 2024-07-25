@@ -1,0 +1,13 @@
+<title>{{ thr_title }} - Thread</title>
+<a href="/">← Takaisin</a>
+<h3>{{ thr_title }}</h3>
+<hr>
+{{ top_msg.content }}
+{% for message in top_msg.replies recursive %}
+    <hr>
+    {{ "&nbsp;"|safe*(loop.depth * 4) }}
+    {{ message.content }}
+    {% if message.replies %}
+        {{ loop(message.replies) }}
+    {% endif %}
+{% endfor %}

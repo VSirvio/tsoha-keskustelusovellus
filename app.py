@@ -12,13 +12,36 @@ app.config["SQLALCHEMY_DATABASE_URI"] = os.environ['DATABASE_URL']
 db = SQLAlchemy(app)
 
 def select_msg_tree(msg_id : int):
-    current_msg = Message(db.session.execute(text(f"SELECT content FROM messages WHERE id = {msg_id}")).fetchone().content)
-    replies = db.session.execute(text(f"SELECT descendant AS id FROM message_tree_paths WHERE ancestor = {msg_id} AND depth = 1")).fetchall()
+    select_msg = text(f"SELECT content FROM messages WHERE id = {msg_id}")
+    msg_content = db.session.execute(select_msg).fetchone().content
+    current_msg = Message(msg_content)
+
+    select_replies = text(
+        f"SELECT descendant AS id "
+        f"FROM message_tree_paths "
+        f"WHERE ancestor = {msg_id} AND depth = 1"
+    )
+    replies = db.session.execute(select_replies).fetchall()
     for reply in replies:
         current_msg.add_reply(select_msg_tree(reply.id))
+
     return current_msg
 
 @app.route("/")
-def message_list():
-    first_msg = select_msg_tree(1)
-    return render_template("messages.html", first_msg=first_msg)
+def subforum():
+    threads = db.session.execute(text("SELECT * FROM threads")).fetchall()
+    return render_template("subforum.html", threads=threads)
+
+@app.route("/thread/<int:thr_id>")
+def thread(thr_id):
+    select_thr = text(f"SELECT title FROM threads WHERE id = {thr_id}")
+    thr_title = db.session.execute(select_thr).fetchone().title
+
+    select_top_msg = text(
+        f"SELECT id FROM messages WHERE thread = {thr_id} AND"
+        f" (SELECT COUNT(*) FROM message_tree_paths WHERE descendant = id) = 1"
+    )
+    top_msg_id = db.session.execute(select_top_msg).fetchone().id
+    top_msg = select_msg_tree(top_msg_id)
+
+    return render_template("thread.html", thr_title=thr_title, top_msg=top_msg)

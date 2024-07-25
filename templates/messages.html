@@ -1,9 +1,0 @@
-{{ first_msg.content }}
-{% for message in first_msg.replies recursive %}
-<hr>
-{{ "&nbsp;"|safe*(loop.depth * 4) }}
-{{ message.content }}
-{% if message.replies %}
-{{ loop(message.replies) }}
-{% endif %}
-{% endfor %}
