@@ -1,5 +1,11 @@
+CREATE TABLE subforums (
+    id SERIAL PRIMARY KEY,
+    title TEXT,
+    description TEXT
+);
 CREATE TABLE threads (
     id SERIAL PRIMARY KEY,
+    subforum INTEGER,
     title TEXT
 );
 CREATE TABLE messages (

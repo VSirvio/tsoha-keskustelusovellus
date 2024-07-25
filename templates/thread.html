@@ -1,6 +1,6 @@
-<title>{{ thr_title }} - Thread</title>
-<a href="/">← Takaisin</a>
-<h3>{{ thr_title }}</h3>
+<title>{{ thread.title }} - Thread</title>
+<a href="/subforum/{{ thread.subforum }}">← Takaisin</a>
+<h3>{{ thread.title }}</h3>
 <hr>
 {{ top_msg.content }}
 {% for message in top_msg.replies recursive %}

@@ -1,0 +1,8 @@
+<title>Subforums</title>
+<h3>Subforums</h3>
+{% for subforum in subforums %}
+    <a href="/subforum/{{ subforum.id }}">{{ subforum.title }}</a>
+    <br>
+    <i>{{ subforum.description }}</i>
+    <hr>
+{% endfor %}

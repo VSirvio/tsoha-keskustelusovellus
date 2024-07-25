@@ -1,4 +1,10 @@
-{% for thread in threads %}
-    <a href="/thread/{{ thread.id }}">{{ thread.title }}</a>
+<title>{{ title }} - Subforum</title>
+<a href="/">← Takaisin</a>
+<h3>{{ title }}</h3>
+<i>{{ desc }}</i>
+<br>
+<br>
+{% for thread in thrs %}
     <hr>
+    <a href="/thread/{{ thread.id }}">{{ thread.title }}</a>
 {% endfor %}

@@ -28,14 +28,26 @@ def select_msg_tree(msg_id : int):
     return current_msg
 
 @app.route("/")
-def subforum():
-    threads = db.session.execute(text("SELECT * FROM threads")).fetchall()
-    return render_template("subforum.html", threads=threads)
+def index():
+    subforums = db.session.execute(text("SELECT * FROM subforums")).fetchall()
+    return render_template("subforum_list.html", subforums=subforums)
+
+@app.route("/subforum/<int:subforum_id>")
+def subforum(subforum_id):
+    select_subforum = text(f"SELECT * FROM subforums WHERE id = {subforum_id}")
+    cur_subforum = db.session.execute(select_subforum).fetchone()
+    title = cur_subforum.title
+    desc = cur_subforum.description
+
+    select_thrs = text(f"SELECT * FROM threads WHERE subforum = {subforum_id}")
+    thrs = db.session.execute(select_thrs).fetchall()
+
+    return render_template("subforum.html", title=title, desc=desc, thrs=thrs)
 
 @app.route("/thread/<int:thr_id>")
 def thread(thr_id):
-    select_thr = text(f"SELECT title FROM threads WHERE id = {thr_id}")
-    thr_title = db.session.execute(select_thr).fetchone().title
+    select_thr = text(f"SELECT * FROM threads WHERE id = {thr_id}")
+    thread = db.session.execute(select_thr).fetchone()
 
     select_top_msg = text(
         f"SELECT id FROM messages WHERE thread = {thr_id} AND"
@@ -44,4 +56,4 @@ def thread(thr_id):
     top_msg_id = db.session.execute(select_top_msg).fetchone().id
     top_msg = select_msg_tree(top_msg_id)
 
-    return render_template("thread.html", thr_title=thr_title, top_msg=top_msg)
+    return render_template("thread.html", thread=thread, top_msg=top_msg)
