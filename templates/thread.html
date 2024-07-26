@@ -3,10 +3,15 @@
 <h3>{{ thread.title }}</h3>
 <hr>
 {{ top_msg.content }}
+<br>
+<a href="/reply/{{ top_msg.id }}">Vastaa</a>
 {% for message in top_msg.replies recursive %}
     <hr>
     {{ "&nbsp;"|safe*(loop.depth * 4) }}
     {{ message.content }}
+    <br>
+    {{ "&nbsp;"|safe*(loop.depth * 4) }}
+    <a href="/reply/{{ message.id }}">Vastaa</a>
     {% if message.replies %}
         {{ loop(message.replies) }}
     {% endif %}
