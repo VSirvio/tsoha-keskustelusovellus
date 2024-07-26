@@ -92,3 +92,38 @@ def send(orig_id):
     db.session.commit()
 
     return redirect(f"/thread/{thr_id}")
+
+@app.route("/delete/<int:id>")
+def delete(id):
+    select_thread = text(f"SELECT thread FROM messages WHERE id = {id}")
+    thr_id = db.session.execute(select_thread).fetchone().thread
+
+    select_paths = text(
+        f"SELECT COUNT(*) AS paths "
+        f"FROM message_tree_paths "
+        f"WHERE descendant = {id}"
+    )
+    path_count = db.session.execute(select_paths).fetchone().paths
+
+    delete_messages = text(
+        f"DELETE FROM messages WHERE id "
+        f"IN (SELECT descendant FROM message_tree_paths WHERE ancestor = {id})"
+    )
+    db.session.execute(delete_messages)
+    delete_paths = text(
+        f"DELETE FROM message_tree_paths WHERE descendant "
+        f"IN (SELECT descendant FROM message_tree_paths WHERE ancestor = {id})"
+    )
+    db.session.execute(delete_paths)
+    db.session.commit()
+
+    if path_count == 1:
+        select_subforum = text(f"SELECT * FROM threads WHERE id = {thr_id}")
+        subforum_id = db.session.execute(select_subforum).fetchone().subforum
+
+        db.session.execute(text(f"DELETE FROM threads WHERE id = {thr_id}"))
+        db.session.commit()
+
+        return redirect(f"/subforum/{subforum_id}")
+
+    return redirect(f"/thread/{thr_id}")

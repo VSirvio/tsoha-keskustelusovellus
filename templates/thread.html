@@ -4,11 +4,16 @@
 <hr>
 {{ top_msg.content }}
 <br>
+<a href="/delete/{{ top_msg.id }}">Poista</a>
+<br>
 <a href="/reply/{{ top_msg.id }}">Vastaa</a>
 {% for message in top_msg.replies recursive %}
     <hr>
     {{ "&nbsp;"|safe*(loop.depth * 4) }}
     {{ message.content }}
+    <br>
+    {{ "&nbsp;"|safe*(loop.depth * 4) }}
+    <a href="/delete/{{ message.id }}">Poista</a>
     <br>
     {{ "&nbsp;"|safe*(loop.depth * 4) }}
     <a href="/reply/{{ message.id }}">Vastaa</a>
