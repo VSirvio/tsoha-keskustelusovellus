@@ -1,8 +1,8 @@
-<title>Subforums</title>
+<title>Keskustelualueet</title>
 Käyttäjä: <b>{{ session.username }}</b>
 <br>
 <a href="/logout">Kirjaudu ulos</a>
-<h3>Subforums</h3>
+<h3>Keskustelualueet</h3>
 {% for subforum in subforums %}
     <a href="/subforum/{{ subforum.id }}">{{ subforum.title }}</a>
     <br>

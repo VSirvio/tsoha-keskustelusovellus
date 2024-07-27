@@ -35,7 +35,7 @@ INSERT INTO messages (uid, thread, content) VALUES (1, 2, 'Pöö');
 INSERT INTO message_tree_paths (ancestor, descendant, depth) VALUES (5, 5, 0);
 
 
-INSERT INTO subforums (title, description) VALUES ('Satunnainen', 'Kaikki muut keskustelut');
+INSERT INTO subforums (title, description) VALUES ('Satunnainen', 'Kaikki muu keskustelu');
 
 
 INSERT INTO threads (uid, subforum, title) VALUES (1, 2, 'Satunnainen keskustelu');
