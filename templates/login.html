@@ -1,0 +1,11 @@
+{% if session.username %}
+<meta http-equiv="Refresh" content="0; url='/forums'">
+{% else %}
+<form action="/login" method="POST">
+<p>Tunnus:<br>
+<input type="text" name="username"></p>
+<p>Salasana:<br>
+<input type="password" name="password"></p>
+<input type="submit" value="Kirjaudu">
+</form>
+{% endif %}

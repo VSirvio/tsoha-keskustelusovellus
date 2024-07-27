@@ -1,3 +1,9 @@
+<a href="/thread/{{ thr_id }}">← Takaisin</a>
+<br><br>
+Käyttäjä: <b>{{ session.username }}</b>
+<br>
+<a href="/logout">Kirjaudu ulos</a>
+<br><br>
 <form action="/send/{{ msg_id }}" method="POST">
 Uusi viesti:
 <input type="text" name="content">

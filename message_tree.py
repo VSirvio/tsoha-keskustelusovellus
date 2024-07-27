@@ -1,8 +1,13 @@
 class Message:
-    def __init__(self, id : int, content : str):
+    def __init__(self, user : str, id : int, content : str):
+        self.__user = user
         self.__id = id
         self.__replies = []
         self.__content = content
+
+    @property
+    def user(self):
+        return self.__user
 
     @property
     def id(self):

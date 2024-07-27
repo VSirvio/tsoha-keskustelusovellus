@@ -1,19 +1,27 @@
 <title>{{ thread.title }} - Thread</title>
 <a href="/subforum/{{ thread.subforum }}">← Takaisin</a>
+<br><br>
+Käyttäjä: <b>{{ session.username }}</b>
+<br>
+<a href="/logout">Kirjaudu ulos</a>
 <h3>{{ thread.title }}</h3>
 <hr>
-{{ top_msg.content }}
-<br>
-<a href="/delete/{{ top_msg.id }}">Poista</a>
+<b>{{ top_msg.user }}:</b> {{ top_msg.content }}
+{% if session.username == top_msg.user %}
+    <br>
+    <a href="/delete/{{ top_msg.id }}">Poista</a>
+{% endif %}
 <br>
 <a href="/reply/{{ top_msg.id }}">Vastaa</a>
 {% for message in top_msg.replies recursive %}
     <hr>
     {{ "&nbsp;"|safe*(loop.depth * 4) }}
-    {{ message.content }}
-    <br>
-    {{ "&nbsp;"|safe*(loop.depth * 4) }}
-    <a href="/delete/{{ message.id }}">Poista</a>
+    <b>{{ message.user }}:</b> {{ message.content }}
+    {% if session.username == message.user %}
+        <br>
+        {{ "&nbsp;"|safe*(loop.depth * 4) }}
+        <a href="/delete/{{ message.id }}">Poista</a>
+    {% endif %}
     <br>
     {{ "&nbsp;"|safe*(loop.depth * 4) }}
     <a href="/reply/{{ message.id }}">Vastaa</a>
