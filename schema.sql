@@ -25,3 +25,8 @@ CREATE TABLE message_tree_paths (
     descendant INTEGER,
     depth INTEGER
 );
+CREATE TABLE likes (
+    uid INTEGER,
+    message INTEGER,
+    value INTEGER
+);

@@ -20,7 +20,23 @@ def select_msg_tree(msg_id : int):
         f"ON messages.id = {msg_id} AND users.id = messages.uid"
     )
     msg = db.session.execute(select_msg).fetchone()
-    current_msg = Message(msg.username, msg_id, msg.content)
+
+    select_likes = text(
+        f"SELECT COALESCE(SUM(value),0) AS total "
+        f"FROM likes WHERE message = {msg_id}"
+    )
+    likes = db.session.execute(select_likes).fetchone().total
+
+    username = session["username"]
+    select_user = text(f"SELECT id FROM users WHERE username = :username")
+    user = db.session.execute(select_user, {"username": username}).fetchone()
+
+    select_own_likes = text(
+        f"SELECT * FROM likes WHERE uid = {user.id} AND message = {msg_id}"
+    )
+    liked = db.session.execute(select_own_likes).fetchone() != None
+
+    current_msg = Message(msg.username, msg_id, msg.content, likes, liked)
 
     select_replies = text(
         f"SELECT descendant AS id "
@@ -187,5 +203,75 @@ def delete(id):
         db.session.commit()
 
         return redirect(f"/subforum/{subforum_id}")
+
+    return redirect(f"/thread/{thr_id}")
+
+@app.route("/like/<int:msg_id>")
+def like(msg_id):
+    if not "username" in session:
+        return redirect(url_for('signin'))
+
+    username = session["username"]
+    select_user = text(f"SELECT id FROM users WHERE username = :username")
+    user = db.session.execute(select_user, {"username": username}).fetchone()
+
+    delete_likes = text(
+        f"DELETE FROM likes WHERE uid = {user.id} AND message = {msg_id}"
+    )
+    db.session.execute(delete_likes)
+    insert_like = text(
+        f"INSERT INTO likes "
+        f"(uid, message, value) VALUES ({user.id}, {msg_id}, 1)"
+    )
+    db.session.execute(insert_like)
+    db.session.commit()
+
+    select_message = text(f"SELECT thread FROM messages WHERE id = {msg_id}")
+    thr_id = db.session.execute(select_message).fetchone().thread
+
+    return redirect(f"/thread/{thr_id}")
+
+@app.route("/dislike/<int:msg_id>")
+def dislike(msg_id):
+    if not "username" in session:
+        return redirect(url_for('signin'))
+
+    username = session["username"]
+    select_user = text(f"SELECT id FROM users WHERE username = :username")
+    user = db.session.execute(select_user, {"username": username}).fetchone()
+
+    delete_likes = text(
+        f"DELETE FROM likes WHERE uid = {user.id} AND message = {msg_id}"
+    )
+    db.session.execute(delete_likes)
+    insert_like = text(
+        f"INSERT INTO likes "
+        f"(uid, message, value) VALUES ({user.id}, {msg_id}, -1)"
+    )
+    db.session.execute(insert_like)
+    db.session.commit()
+
+    select_message = text(f"SELECT thread FROM messages WHERE id = {msg_id}")
+    thr_id = db.session.execute(select_message).fetchone().thread
+
+    return redirect(f"/thread/{thr_id}")
+
+@app.route("/unlike/<int:msg_id>")
+def unlike(msg_id):
+    if not "username" in session:
+        return redirect(url_for('signin'))
+
+    username = session["username"]
+    select_user = text(f"SELECT id FROM users WHERE username = :username")
+    user = db.session.execute(select_user, {"username": username}).fetchone()
+
+    delete_likes = text(
+        f"DELETE FROM likes WHERE uid = {user.id} AND message = {msg_id}"
+    )
+    db.session.execute(delete_likes)
+    db.session.commit()
+
+    select_message = text(f"SELECT thread FROM messages WHERE id = {msg_id}")
+    thr_id = db.session.execute(select_message).fetchone().thread
 
     return redirect(f"/thread/{thr_id}")

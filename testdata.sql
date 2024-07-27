@@ -14,6 +14,7 @@ INSERT INTO threads (uid, subforum, title) VALUES (1, 1, 'Joku keskustelu');
 
 INSERT INTO messages (uid, thread, content) VALUES (1, 1, 'Terve, maailma!');
 INSERT INTO message_tree_paths (ancestor, descendant, depth) VALUES (1, 1, 0);
+INSERT INTO likes (uid, message, value) VALUES (1, 1, 1);
 
 INSERT INTO messages (uid, thread, content) VALUES (2, 1, 'Jotain muuta...');
 INSERT INTO message_tree_paths (ancestor, descendant, depth) VALUES (2, 2, 0);

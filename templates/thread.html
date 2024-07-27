@@ -7,24 +7,48 @@ Käyttäjä: <b>{{ session.username }}</b>
 <h3>{{ thread.title }}</h3>
 <hr>
 <b>{{ top_msg.user }}:</b> {{ top_msg.content }}
-{% if session.username == top_msg.user %}
-    <br>
-    <a href="/delete/{{ top_msg.id }}">Poista</a>
-{% endif %}
 <br>
 <a href="/reply/{{ top_msg.id }}">Vastaa</a>
+{% if session.username == top_msg.user %}
+    &nbsp;<a href="/delete/{{ top_msg.id }}">Poista</a>
+{% endif %}
+<br>
+<b>{{ top_msg.likes }}</b>
+{% if top_msg.likes == 1 or top_msg.likes == -1 %}
+    <b>tykkäys</b>
+{% else %}
+    <b>tykkäystä</b>
+{% endif %}
+{% if top_msg.liked %}
+    <a href="/unlike/{{ top_msg.id }}">Poista tykkäys</a>
+{% else %}
+    <a href="/like/{{ top_msg.id }}">+</a>
+    <a href="/dislike/{{ top_msg.id }}">-</a>
+{% endif %}
 {% for message in top_msg.replies recursive %}
     <hr>
     {{ "&nbsp;"|safe*(loop.depth * 4) }}
     <b>{{ message.user }}:</b> {{ message.content }}
-    {% if session.username == message.user %}
-        <br>
-        {{ "&nbsp;"|safe*(loop.depth * 4) }}
-        <a href="/delete/{{ message.id }}">Poista</a>
-    {% endif %}
     <br>
     {{ "&nbsp;"|safe*(loop.depth * 4) }}
     <a href="/reply/{{ message.id }}">Vastaa</a>
+    {% if session.username == message.user %}
+        &nbsp;<a href="/delete/{{ message.id }}">Poista</a>
+    {% endif %}
+    <br>
+    {{ "&nbsp;"|safe*(loop.depth * 4) }}
+    <b>{{ message.likes }}</b>
+    {% if message.likes == 1 or message.likes == -1 %}
+        <b>tykkäys</b>
+    {% else %}
+        <b>tykkäystä</b>
+    {% endif %}
+    {% if message.liked %}
+        <a href="/unlike/{{ message.id }}">Poista tykkäys</a>
+    {% else %}
+        <a href="/like/{{ message.id }}">+</a>
+        <a href="/dislike/{{ message.id }}">-</a>
+    {% endif %}
     {% if message.replies %}
         {{ loop(message.replies) }}
     {% endif %}
