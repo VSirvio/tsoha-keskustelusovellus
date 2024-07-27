@@ -5,9 +5,22 @@ Käyttäjä: <b>{{ session.username }}</b>
 <br>
 <a href="/logout">Kirjaudu ulos</a>
 <br><br>
-<form action="/send/{{ msg_id }}" method="POST">
+<form action="/send/{{ msg_id }}" method="POST" onsubmit="return check(this)">
 Uusi viesti:
 <input type="text" name="content">
 <br>
 <input type="submit" value="Lähetä">
 </form>
+<script>
+    function check(form) {
+        if (form.content.value.length < 1) {
+            alert("Pienin sallittu merkkimäärä on 1");
+            return false;
+        }
+        if (form.content.value.length > 1000) {
+            alert("Suurin sallittu merkkimäärä on 1000");
+            return false;
+        }
+        return true;
+    }
+</script>

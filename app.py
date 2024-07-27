@@ -63,11 +63,12 @@ def login():
     select_user = text(f"SELECT * FROM users WHERE username = :username")
     user = db.session.execute(select_user, {"username": username}).fetchone()
 
-    if user and check_password_hash(user.password, password):
-        session["username"] = username
-        return redirect(url_for('forums'))
+    if (not user) or (not check_password_hash(user.password, password)):
+        error_message = "Virheellinen käyttäjätunnus tai salasana"
+        return render_template("login.html", error=error_message)
 
-    return redirect(url_for('signin'))
+    session["username"] = username
+    return redirect(url_for('forums'))
 
 @app.route("/logout")
 def logout():
@@ -128,6 +129,11 @@ def send(orig_id):
     if not "username" in session:
         return redirect(url_for('signin'))
 
+    content = request.form["content"]
+
+    if len(content) < 1 or len(content) > 1000:
+        return redirect(url_for('message'))
+
     username = session["username"]
     select_user = text(f"SELECT id FROM users WHERE username = :username")
     user = db.session.execute(select_user, {"username": username}).fetchone()
@@ -135,7 +141,6 @@ def send(orig_id):
     select_thr_id = text(f"SELECT thread FROM messages WHERE id = {orig_id}")
     thr_id = db.session.execute(select_thr_id).fetchone().thread
 
-    content = request.form["content"]
     insert_msg = text(
         f"INSERT INTO messages "
         f"(uid, thread, content) VALUES ({user.id}, {thr_id}, :content) "
