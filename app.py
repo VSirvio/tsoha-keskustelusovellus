@@ -21,22 +21,22 @@ def select_msg_tree(msg_id : int):
     )
     msg = db.session.execute(select_msg).fetchone()
 
+    cur_msg = Message(msg.username, msg_id, msg.content)
+
     select_likes = text(
         f"SELECT COALESCE(SUM(value),0) AS total "
         f"FROM likes WHERE message = {msg_id}"
     )
-    likes = db.session.execute(select_likes).fetchone().total
+    cur_msg.likes = db.session.execute(select_likes).fetchone().total
 
     username = session["username"]
-    select_user = text(f"SELECT id FROM users WHERE username = :username")
+    select_user = text("SELECT id FROM users WHERE username = :username")
     user = db.session.execute(select_user, {"username": username}).fetchone()
 
     select_own_likes = text(
         f"SELECT * FROM likes WHERE uid = {user.id} AND message = {msg_id}"
     )
-    liked = db.session.execute(select_own_likes).fetchone() != None
-
-    current_msg = Message(msg.username, msg_id, msg.content, likes, liked)
+    cur_msg.liked = db.session.execute(select_own_likes).fetchone() is not None
 
     select_replies = text(
         f"SELECT descendant AS id "
@@ -45,9 +45,9 @@ def select_msg_tree(msg_id : int):
     )
     replies = db.session.execute(select_replies).fetchall()
     for reply in replies:
-        current_msg.add_reply(select_msg_tree(reply.id))
+        cur_msg.add_reply(select_msg_tree(reply.id))
 
-    return current_msg
+    return cur_msg
 
 @app.route("/")
 def signin():
@@ -60,7 +60,7 @@ def login():
     username = request.form["username"]
     password = request.form["password"]
 
-    select_user = text(f"SELECT * FROM users WHERE username = :username")
+    select_user = text("SELECT * FROM users WHERE username = :username")
     user = db.session.execute(select_user, {"username": username}).fetchone()
 
     if (not user) or (not check_password_hash(user.password, password)):
@@ -77,14 +77,14 @@ def logout():
 
 @app.route("/forums")
 def forums():
-    if not "username" in session:
+    if "username" not in session:
         return redirect(url_for('signin'))
     subforums = db.session.execute(text("SELECT * FROM subforums")).fetchall()
     return render_template("subforum_list.html", subforums=subforums)
 
 @app.route("/subforum/<int:subforum_id>")
 def subforum(subforum_id):
-    if not "username" in session:
+    if "username" not in session:
         return redirect(url_for('signin'))
 
     select_subforum = text(f"SELECT * FROM subforums WHERE id = {subforum_id}")
@@ -99,11 +99,11 @@ def subforum(subforum_id):
 
 @app.route("/thread/<int:thr_id>")
 def thread(thr_id):
-    if not "username" in session:
+    if "username" not in session:
         return redirect(url_for('signin'))
 
     select_thr = text(f"SELECT * FROM threads WHERE id = {thr_id}")
-    thread = db.session.execute(select_thr).fetchone()
+    thr = db.session.execute(select_thr).fetchone()
 
     select_top_msg = text(
         f"SELECT id FROM messages WHERE thread = {thr_id} AND"
@@ -112,11 +112,11 @@ def thread(thr_id):
     top_msg_id = db.session.execute(select_top_msg).fetchone().id
     top_msg = select_msg_tree(top_msg_id)
 
-    return render_template("thread.html", thread=thread, top_msg=top_msg)
+    return render_template("thread.html", thread=thr, top_msg=top_msg)
 
 @app.route("/reply/<int:msg_id>")
 def message(msg_id):
-    if not "username" in session:
+    if "username" not in session:
         return redirect(url_for('signin'))
 
     select_msg = text(f"SELECT thread FROM messages WHERE id = {msg_id}")
@@ -126,7 +126,7 @@ def message(msg_id):
 
 @app.route("/send/<int:orig_id>", methods=["POST"])
 def send(orig_id):
-    if not "username" in session:
+    if "username" not in session:
         return redirect(url_for('signin'))
 
     content = request.form["content"]
@@ -135,7 +135,7 @@ def send(orig_id):
         return redirect(url_for('message'))
 
     username = session["username"]
-    select_user = text(f"SELECT id FROM users WHERE username = :username")
+    select_user = text("SELECT id FROM users WHERE username = :username")
     user = db.session.execute(select_user, {"username": username}).fetchone()
 
     select_thr_id = text(f"SELECT thread FROM messages WHERE id = {orig_id}")
@@ -166,12 +166,14 @@ def send(orig_id):
 
     return redirect(f"/thread/{thr_id}")
 
-@app.route("/delete/<int:id>")
-def delete(id):
-    if not "username" in session:
+@app.route("/delete/<int:msg_id>")
+def delete(msg_id):
+    if "username" not in session:
         return redirect(url_for('signin'))
 
-    select_message = text(f"SELECT uid, thread FROM messages WHERE id = {id}")
+    select_message = text(
+        f"SELECT uid, thread FROM messages WHERE id = {msg_id}"
+    )
     msg = db.session.execute(select_message).fetchone()
     thr_id = msg.thread
 
@@ -184,18 +186,20 @@ def delete(id):
     select_paths = text(
         f"SELECT COUNT(*) AS paths "
         f"FROM message_tree_paths "
-        f"WHERE descendant = {id}"
+        f"WHERE descendant = {msg_id}"
     )
     path_count = db.session.execute(select_paths).fetchone().paths
 
     delete_messages = text(
-        f"DELETE FROM messages WHERE id "
-        f"IN (SELECT descendant FROM message_tree_paths WHERE ancestor = {id})"
+        f"DELETE FROM messages WHERE id IN ("
+        f" SELECT descendant FROM message_tree_paths WHERE ancestor = {msg_id}"
+        f")"
     )
     db.session.execute(delete_messages)
     delete_paths = text(
-        f"DELETE FROM message_tree_paths WHERE descendant "
-        f"IN (SELECT descendant FROM message_tree_paths WHERE ancestor = {id})"
+        f"DELETE FROM message_tree_paths WHERE descendant IN ("
+        f" SELECT descendant FROM message_tree_paths WHERE ancestor = {msg_id}"
+        f")"
     )
     db.session.execute(delete_paths)
     db.session.commit()
@@ -213,11 +217,11 @@ def delete(id):
 
 @app.route("/like/<int:msg_id>")
 def like(msg_id):
-    if not "username" in session:
+    if "username" not in session:
         return redirect(url_for('signin'))
 
     username = session["username"]
-    select_user = text(f"SELECT id FROM users WHERE username = :username")
+    select_user = text("SELECT id FROM users WHERE username = :username")
     user = db.session.execute(select_user, {"username": username}).fetchone()
 
     delete_likes = text(
@@ -238,11 +242,11 @@ def like(msg_id):
 
 @app.route("/dislike/<int:msg_id>")
 def dislike(msg_id):
-    if not "username" in session:
+    if "username" not in session:
         return redirect(url_for('signin'))
 
     username = session["username"]
-    select_user = text(f"SELECT id FROM users WHERE username = :username")
+    select_user = text("SELECT id FROM users WHERE username = :username")
     user = db.session.execute(select_user, {"username": username}).fetchone()
 
     delete_likes = text(
@@ -263,11 +267,11 @@ def dislike(msg_id):
 
 @app.route("/unlike/<int:msg_id>")
 def unlike(msg_id):
-    if not "username" in session:
+    if "username" not in session:
         return redirect(url_for('signin'))
 
     username = session["username"]
-    select_user = text(f"SELECT id FROM users WHERE username = :username")
+    select_user = text("SELECT id FROM users WHERE username = :username")
     user = db.session.execute(select_user, {"username": username}).fetchone()
 
     delete_likes = text(
