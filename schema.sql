@@ -10,23 +10,23 @@ CREATE TABLE subforums (
 );
 CREATE TABLE threads (
     id SERIAL PRIMARY KEY,
-    uid INTEGER,
-    subforum INTEGER,
+    uid INTEGER REFERENCES users,
+    subforum INTEGER REFERENCES subforums,
     title TEXT
 );
 CREATE TABLE messages (
     id SERIAL PRIMARY KEY,
-    uid INTEGER,
-    thread INTEGER,
+    uid INTEGER REFERENCES users,
+    thread INTEGER REFERENCES threads,
     content TEXT
 );
 CREATE TABLE message_tree_paths (
-    ancestor INTEGER,
-    descendant INTEGER,
+    ancestor INTEGER REFERENCES messages,
+    descendant INTEGER REFERENCES messages,
     depth INTEGER
 );
 CREATE TABLE likes (
-    uid INTEGER,
-    message INTEGER,
+    uid INTEGER REFERENCES users,
+    message INTEGER REFERENCES messages,
     value INTEGER
 );
