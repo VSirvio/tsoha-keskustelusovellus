@@ -6,26 +6,26 @@ Käyttäjä: <b>{{ session.username }}</b>
 <a href="/logout">Kirjaudu ulos</a>
 <h3>{{ thread.title }}</h3>
 <hr>
-<b>{{ top_msg.user }}:</b> {{ top_msg.content }}
+<b>{{ first_msg.user }}:</b> {{ first_msg.content }}
 <br>
-<a href="/reply/{{ top_msg.id }}">Vastaa</a>
-{% if session.username == top_msg.user %}
-    &nbsp;<a href="/delete/{{ top_msg.id }}">Poista</a>
+<a href="/reply/{{ first_msg.id }}">Vastaa</a>
+{% if session.username == first_msg.user %}
+    &nbsp;<a href="/delete/{{ first_msg.id }}">Poista</a>
 {% endif %}
 <br>
-<b>{{ top_msg.likes }}</b>
-{% if top_msg.likes == 1 or top_msg.likes == -1 %}
+<b>{{ first_msg.likes }}</b>
+{% if first_msg.likes == 1 or first_msg.likes == -1 %}
     <b>tykkäys</b>
 {% else %}
     <b>tykkäystä</b>
 {% endif %}
-{% if top_msg.liked %}
-    <a href="/unlike/{{ top_msg.id }}">Poista tykkäys</a>
+{% if first_msg.liked %}
+    <a href="/unlike/{{ first_msg.id }}">Poista tykkäys</a>
 {% else %}
-    <a href="/like/{{ top_msg.id }}">+</a>
-    <a href="/dislike/{{ top_msg.id }}">-</a>
+    <a href="/like/{{ first_msg.id }}">+</a>
+    <a href="/dislike/{{ first_msg.id }}">-</a>
 {% endif %}
-{% for message in top_msg.replies recursive %}
+{% for message in first_msg.replies recursive %}
     <hr>
     {{ "&nbsp;"|safe*(loop.depth * 4) }}
     <b>{{ message.user }}:</b> {{ message.content }}
