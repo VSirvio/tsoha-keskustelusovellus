@@ -14,3 +14,13 @@ Sovelluksen ominaisuuksia:
 * Käyttäjä voi lajitella keskustelualueen ketjut ja keskusteluketjun viestit lähetysajan tai yläpeukkujen määrän mukaan.
 * Ylläpitäjä voi lisätä ja poistaa keskustelualueita.
 * Ylläpitäjä voi luoda salaisen alueen ja määrittää, keillä käyttäjillä on pääsy alueelle.
+
+Tällä hetkellä toteutettu:
+
+* Käyttäjä voi kirjautua sisään ja ulos (uutta tunnusta ei voi vielä luoda, testdata.sql:n suorittaminen luo kaksi valmista käyttäjää "Test user 1" ja "Test user 2", joiden salasanat ovat "12345" ja "00000").
+* Käyttäjä näkee sovelluksen etusivulla listan alueista (tällä hetkellä alueista ei näy vielä muita tietoja kuin alueen nimi ja lyhyt tekstuaalinen kuvaus, uusia ketjuja ei voi vielä luoda).
+* Käyttäjä voi kirjoittaa ketjuun uuden viestin vastauksena olemassa olevaan viestiin.
+* Käyttäjä voi poistaa viestin (ketjuja ja viestejä ei vielä pysty muuten muokkaamaan, viestien hakutoimintoa ei ole vielä toteutettu).
+* Käyttäjä voi antaa ylä- tai alapeukun viestille. Käyttäjä voi myöhemmin muokata valintaansa.
+* Viestejä EI voi vielä lajitella millään perusteella.
+* Ylläpitäjäkäyttäjiä ja heihin liittyviä toimintoja EI ole vielä toteutettu.
