@@ -24,3 +24,25 @@ Tällä hetkellä toteutettu:
 * Käyttäjä voi antaa ylä- tai alapeukun viestille. Käyttäjä voi myöhemmin muokata valintaansa.
 * Viestejä EI voi vielä lajitella millään perusteella.
 * Ylläpitäjäkäyttäjiä ja heihin liittyviä toimintoja EI ole vielä toteutettu.
+
+**Ohjeet sovelluksen testaamiseen:**
+
+1. Kloonaa tämä repositorio omalle koneellesi ja siirry sen juurikansioon. Luo kansioon .env-tiedosto ja määritä sen sisältö seuraavanlaiseksi:
+
+        DATABASE_URL=<tietokannan-paikallinen-osoite>
+        SECRET_KEY=<salainen-avain>
+
+2. Seuraavaksi aktivoi virtuaaliympäristö ja asenna sovelluksen riippuvuudet komennoilla
+
+        $ python3 -m venv venv
+        $ source venv/bin/activate
+        $ pip install -r ./requirements.txt
+
+3. Määritä vielä tietokannan skeema ja lue testidata tietokantaan komennoilla
+
+        $ psql -d <tietokannan-nimi> < schema.sql
+        $ psql -d <tietokannan-nimi> < testdata.sql
+
+5. Nyt voit käynnistää sovelluksen komennolla
+
+        $ flask run
