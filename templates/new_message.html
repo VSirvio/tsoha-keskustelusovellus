@@ -7,7 +7,7 @@ Käyttäjä: <b>{{ session.username }}</b>
 <br><br>
 <form action="/send/{{ msg_id }}" method="POST" onsubmit="return check(this)">
 Uusi viesti:
-<input type="text" name="content">
+<input type="text" name="content" autofocus>
 <br>
 <input type="submit" value="Lähetä">
 </form>
