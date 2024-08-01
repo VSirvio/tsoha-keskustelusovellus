@@ -10,6 +10,7 @@ Uusi viesti:
 <input type="text" name="content" autofocus>
 <br>
 <input type="submit" value="Lähetä">
+<input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
 </form>
 <script>
     function check(form) {

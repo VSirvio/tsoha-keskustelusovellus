@@ -1,3 +1,4 @@
+import secrets
 from flask import render_template, redirect, request, session, url_for
 from werkzeug.security import check_password_hash
 from message_tree import Message
@@ -40,6 +41,8 @@ def login():
         return render_template("login.html", error=error_message)
 
     session["username"] = username
+    session["csrf_token"] = secrets.token_hex(16)
+
     return redirect(url_for('forums'))
 
 @app.route("/logout")
@@ -86,6 +89,9 @@ def message(msg_id):
 def send(orig_id):
     if "username" not in session:
         return redirect(url_for('signin'))
+
+    if session["csrf_token"] != request.form["csrf_token"]:
+        abort(403)
 
     content = request.form["content"]
 
