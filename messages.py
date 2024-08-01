@@ -62,10 +62,4 @@ def delete_msg(msg_id : int):
         ")"
     )
     db.session.execute(sql, {"msg_id": msg_id})
-    sql = text(
-        "DELETE FROM message_tree_paths WHERE descendant IN ("
-        " SELECT descendant FROM message_tree_paths WHERE ancestor = :msg_id"
-        ")"
-    )
-    db.session.execute(sql, {"msg_id": msg_id})
     db.session.commit()
