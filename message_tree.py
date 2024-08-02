@@ -1,3 +1,5 @@
+from typing import List
+
 class Message:
     def __init__(self, user : str, msg_id : int, content : str):
         self.__user = user
@@ -16,10 +18,10 @@ class Message:
         return self.__id
 
     @property
-    def replies(self):
+    def replies(self) -> List['Message']:
         return self.__replies
 
-    def add_reply(self, reply):
+    def add_reply(self, reply : 'Message'):
         self.__replies.append(reply)
 
     @property
