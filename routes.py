@@ -1,5 +1,5 @@
 import secrets
-from flask import render_template, redirect, request, session, url_for
+from flask import render_template, redirect, abort, request, session, url_for
 from werkzeug.security import check_password_hash
 from message_tree import Message
 from app import app
