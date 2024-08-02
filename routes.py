@@ -90,7 +90,7 @@ def thread(thr_id):
 def message(msg_id):
     if "username" not in session:
         return redirect(url_for("signin"))
-    thr_id = messages.get_thr_id(msg_id)
+    thr_id = messages.get_msg(msg_id).thread
     return render_template("new_message.html", msg_id=msg_id, thr_id=thr_id)
 
 @app.route("/send/<int:orig_id>", methods=["POST"])
@@ -107,7 +107,7 @@ def send(orig_id):
         return redirect(url_for("message"))
 
     user = users.get_user(session["username"])
-    thr_id = messages.get_thr_id(orig_id)
+    thr_id = messages.get_msg(orig_id).thread
     messages.new_msg(orig_id, user.id, thr_id, content)
 
     return redirect(f"/thread/{thr_id}")
@@ -143,7 +143,7 @@ def like(msg_id):
 
     likes.like(user.id, msg_id)
 
-    return redirect(f"/thread/{messages.get_thr_id(msg_id)}")
+    return redirect(f"/thread/{messages.get_msg(msg_id).thread}")
 
 @app.route("/dislike/<int:msg_id>")
 def dislike(msg_id):
@@ -154,7 +154,7 @@ def dislike(msg_id):
 
     likes.dislike(user.id, msg_id)
 
-    return redirect(f"/thread/{messages.get_thr_id(msg_id)}")
+    return redirect(f"/thread/{messages.get_msg(msg_id).thread}")
 
 @app.route("/unlike/<int:msg_id>")
 def unlike(msg_id):
@@ -165,4 +165,4 @@ def unlike(msg_id):
 
     likes.unlike(user.id, msg_id)
 
-    return redirect(f"/thread/{messages.get_thr_id(msg_id)}")
+    return redirect(f"/thread/{messages.get_msg(msg_id).thread}")

@@ -17,10 +17,6 @@ def get_replies(msg_id : int):
     )
     return db.session.execute(sql, {"msg_id": msg_id}).fetchall()
 
-def get_thr_id(msg_id : int):
-    sql = text("SELECT thread FROM messages WHERE id = :msg_id")
-    return db.session.execute(sql, {"msg_id": msg_id}).fetchone().thread
-
 def new_msg(orig_id : int, uid : int, thr_id : int, content : str):
     sql = text(
         "INSERT INTO messages "
