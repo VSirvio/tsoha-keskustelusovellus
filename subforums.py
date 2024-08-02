@@ -6,7 +6,5 @@ def get_subforums():
     return db.session.execute(sql).fetchall()
 
 def get_subforum(subforum_id : int):
-    select_subforum = text(
-        f"SELECT title, description FROM subforums WHERE id = {subforum_id}"
-    )
-    return db.session.execute(select_subforum).fetchone()
+    sql = text("SELECT title, description FROM subforums WHERE id = :id")
+    return db.session.execute(sql, {"id": subforum_id}).fetchone()
