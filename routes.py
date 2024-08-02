@@ -34,6 +34,14 @@ def login():
     username = request.form["username"]
     password = request.form["password"]
 
+    if len(username) > 30:
+        error_message = "Pisin sallittu tunnuksen pituus on 30 merkkiä"
+        return render_template("login.html", error=error_message)
+
+    if len(password) > 30:
+        error_message = "Pisin sallittu salasanan pituus on 30 merkkiä"
+        return render_template("login.html", error=error_message)
+
     user = users.get_user(username)
 
     if (not user) or (not check_password_hash(user.password, password)):
