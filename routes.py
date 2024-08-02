@@ -74,7 +74,7 @@ def subforum(subforum_id):
     title = cur_subforum.title
     desc = cur_subforum.description
 
-    thrs = threads.get_threads(subforum_id)
+    thrs = threads.get_thrs(subforum_id)
 
     return render_template("subforum.html", title=title, desc=desc, thrs=thrs)
 
@@ -82,7 +82,7 @@ def subforum(subforum_id):
 def thread(thr_id):
     if "username" not in session:
         return redirect(url_for("signin"))
-    thr = threads.get_thread(thr_id)
+    thr = threads.get_thr(thr_id)
     first_msg = select_msg_tree(threads.get_1st_msg_id(thr_id))
     return render_template("thread.html", thread=thr, first_msg=first_msg)
 

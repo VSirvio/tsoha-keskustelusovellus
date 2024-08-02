@@ -1,11 +1,11 @@
 from sqlalchemy.sql import text
 from db import db
 
-def get_threads(subforum_id : int):
+def get_thrs(subforum_id : int):
     sql = text("SELECT id, uid, title FROM threads WHERE subforum = :subforum")
     return db.session.execute(sql, {"subforum": subforum_id}).fetchall()
 
-def get_thread(thr_id : int):
+def get_thr(thr_id : int):
     sql = text("SELECT uid, subforum, title FROM threads WHERE id = :thr_id")
     return db.session.execute(sql, {"thr_id": thr_id}).fetchone()
 
