@@ -26,7 +26,7 @@ def select_msg_tree(msg_id : int):
 @app.route("/")
 def signin():
     if "username" in session:
-        return redirect(url_for('forums'))
+        return redirect(url_for("forums"))
     return render_template("login.html")
 
 @app.route("/login", methods=["POST"])
@@ -43,7 +43,7 @@ def login():
     session["username"] = username
     session["csrf_token"] = secrets.token_hex(16)
 
-    return redirect(url_for('forums'))
+    return redirect(url_for("forums"))
 
 @app.route("/logout")
 def logout():
@@ -53,14 +53,14 @@ def logout():
 @app.route("/forums")
 def forums():
     if "username" not in session:
-        return redirect(url_for('signin'))
+        return redirect(url_for("signin"))
     forum_list = subforums.get_subforums()
     return render_template("subforum_list.html", subforums=forum_list)
 
 @app.route("/subforum/<int:subforum_id>")
 def subforum(subforum_id):
     if "username" not in session:
-        return redirect(url_for('signin'))
+        return redirect(url_for("signin"))
 
     cur_subforum = subforums.get_subforum(subforum_id)
     title = cur_subforum.title
@@ -73,7 +73,7 @@ def subforum(subforum_id):
 @app.route("/thread/<int:thr_id>")
 def thread(thr_id):
     if "username" not in session:
-        return redirect(url_for('signin'))
+        return redirect(url_for("signin"))
     thr = threads.get_thread(thr_id)
     first_msg = select_msg_tree(threads.get_1st_msg_id(thr_id))
     return render_template("thread.html", thread=thr, first_msg=first_msg)
@@ -81,14 +81,14 @@ def thread(thr_id):
 @app.route("/reply/<int:msg_id>")
 def message(msg_id):
     if "username" not in session:
-        return redirect(url_for('signin'))
+        return redirect(url_for("signin"))
     thr_id = messages.get_thr_id(msg_id)
     return render_template("new_message.html", msg_id=msg_id, thr_id=thr_id)
 
 @app.route("/send/<int:orig_id>", methods=["POST"])
 def send(orig_id):
     if "username" not in session:
-        return redirect(url_for('signin'))
+        return redirect(url_for("signin"))
 
     if session["csrf_token"] != request.form["csrf_token"]:
         abort(403)
@@ -96,7 +96,7 @@ def send(orig_id):
     content = request.form["content"]
 
     if len(content) < 1 or len(content) > 1000:
-        return redirect(url_for('message'))
+        return redirect(url_for("message"))
 
     user = users.get_user(session["username"])
     thr_id = messages.get_thr_id(orig_id)
@@ -107,7 +107,7 @@ def send(orig_id):
 @app.route("/delete/<int:msg_id>")
 def delete(msg_id):
     if "username" not in session:
-        return redirect(url_for('signin'))
+        return redirect(url_for("signin"))
 
     msg = messages.get_msg(msg_id)
 
@@ -129,7 +129,7 @@ def delete(msg_id):
 @app.route("/like/<int:msg_id>")
 def like(msg_id):
     if "username" not in session:
-        return redirect(url_for('signin'))
+        return redirect(url_for("signin"))
 
     user = users.get_user(session["username"])
 
@@ -140,7 +140,7 @@ def like(msg_id):
 @app.route("/dislike/<int:msg_id>")
 def dislike(msg_id):
     if "username" not in session:
-        return redirect(url_for('signin'))
+        return redirect(url_for("signin"))
 
     user = users.get_user(session["username"])
 
@@ -151,7 +151,7 @@ def dislike(msg_id):
 @app.route("/unlike/<int:msg_id>")
 def unlike(msg_id):
     if "username" not in session:
-        return redirect(url_for('signin'))
+        return redirect(url_for("signin"))
 
     user = users.get_user(session["username"])
 
