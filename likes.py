@@ -32,7 +32,7 @@ def get_total_likes(msg_id : int):
     return db.session.execute(sql, {"msg_id": msg_id}).fetchone().total
 
 def voted_by_user(msg_id : int, uid : int):
-    sql = text("SELECT * FROM likes WHERE uid = :uid AND message = :msg_id")
+    sql = text("SELECT uid FROM likes WHERE uid = :uid AND message = :msg_id")
     params = {"uid": uid, "msg_id": msg_id}
     own_likes = db.session.execute(sql, params).fetchone()
     return own_likes is not None
