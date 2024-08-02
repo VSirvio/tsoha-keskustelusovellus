@@ -24,6 +24,8 @@ INSERT INTO messages (uid, thread, content) VALUES (1, 1, 'Mitä muuta?');
 INSERT INTO message_tree_paths (ancestor, descendant, depth) VALUES (3, 3, 0);
 INSERT INTO message_tree_paths (ancestor, descendant, depth) VALUES (1, 3, 2);
 INSERT INTO message_tree_paths (ancestor, descendant, depth) VALUES (2, 3, 1);
+INSERT INTO likes (uid, message, value) VALUES (1, 3, -1);
+INSERT INTO likes (uid, message, value) VALUES (2, 3, 1);
 
 INSERT INTO messages (uid, thread, content) VALUES (1, 1, 'Vielä yksi viesti.');
 INSERT INTO message_tree_paths (ancestor, descendant, depth) VALUES (4, 4, 0);
