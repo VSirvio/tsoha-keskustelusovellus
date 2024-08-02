@@ -1,10 +1,10 @@
--- username: Test user 1
+-- username: User1
 -- password: 12345
-INSERT INTO users (username, password) VALUES ('Test user 1', 'scrypt:32768:8:1$QZcFXcdiLfhqsAZg$10288da3121ac08d1b133bf50429f5b09060b95dab3f07488f5711eac6e928e00a6eba45c8b1a90dff42c24843aa2f159debeea398b609d3c50a800ba542bc83');
+INSERT INTO users (username, password) VALUES ('User1', 'scrypt:32768:8:1$QZcFXcdiLfhqsAZg$10288da3121ac08d1b133bf50429f5b09060b95dab3f07488f5711eac6e928e00a6eba45c8b1a90dff42c24843aa2f159debeea398b609d3c50a800ba542bc83');
 
--- username: Test user 2
+-- username: User2
 -- password: 00000
-INSERT INTO users (username, password) VALUES ('Test user 2', 'scrypt:32768:8:1$0WHsQVBijRO3ytem$9729bb758e59a21a26aef46d61c753a5d34ee2a307abe5f112121a89b512e19bd134fab49ab6166932ce66a6a3ae59ea15ffb4c15e8fac40077c4e0eb2bee207');
+INSERT INTO users (username, password) VALUES ('User2', 'scrypt:32768:8:1$0WHsQVBijRO3ytem$9729bb758e59a21a26aef46d61c753a5d34ee2a307abe5f112121a89b512e19bd134fab49ab6166932ce66a6a3ae59ea15ffb4c15e8fac40077c4e0eb2bee207');
 
 
 INSERT INTO subforums (title, description) VALUES ('Yleinen', 'Kaikki yleinen keskustelu');

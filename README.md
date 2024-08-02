@@ -17,7 +17,7 @@ Sovelluksen ominaisuuksia:
 
 Tällä hetkellä toteutettu:
 
-* Käyttäjä voi kirjautua sisään ja ulos (uutta tunnusta ei voi vielä luoda, testdata.sql:n suorittaminen luo kaksi valmista käyttäjää `Test user 1` ja `Test user 2`, joiden salasanat ovat `12345` ja `00000`).
+* Käyttäjä voi kirjautua sisään ja ulos (uutta tunnusta ei voi vielä luoda, testdata.sql:n suorittaminen luo kaksi valmista käyttäjää `User1` ja `User2`, joiden salasanat ovat `12345` ja `00000`).
 * Käyttäjä näkee sovelluksen etusivulla listan alueista (tällä hetkellä alueista ei näy vielä muita tietoja kuin alueen nimi ja lyhyt tekstuaalinen kuvaus, uusia ketjuja ei voi vielä luoda).
 * Käyttäjä voi kirjoittaa ketjuun uuden viestin vastauksena olemassa olevaan viestiin.
 * Käyttäjä voi poistaa viestin (ketjuja ja viestejä ei vielä pysty muuten muokkaamaan, viestien hakutoimintoa ei ole vielä toteutettu).
@@ -47,4 +47,4 @@ Tällä hetkellä toteutettu:
 
         $ flask run
 
-7. Sovellus löytyy nyt osoitteesta <http://localhost:5000>. Siihen on luettu testidatasta kaksi valmista testikäyttäjää `Test user 1` ja `Test user 2`, joiden salasanat ovat `12345` ja `00000`.
+7. Sovellus löytyy nyt osoitteesta <http://localhost:5000>. Siihen on luettu testidatasta kaksi valmista testikäyttäjää `User1` ja `User2`, joiden salasanat ovat `12345` ja `00000`.
