@@ -1,9 +1,7 @@
+{% extends "layout.html" %}
+{% block previous %}/subforum/{{ thread.subforum }}{% endblock %}
+{% block content %}
 <title>{{ thread.title }} - Viestiketju</title>
-<a href="/subforum/{{ thread.subforum }}">← Takaisin</a>
-<br><br>
-Käyttäjä: <b>{{ session.username }}</b>
-<br>
-<a href="/logout">Kirjaudu ulos</a>
 <h3>{{ thread.title }}</h3>
 <hr>
 <b>{{ first_msg.user }}:</b> {{ first_msg.content }}
@@ -53,3 +51,4 @@ Käyttäjä: <b>{{ session.username }}</b>
         {{ loop(message.replies) }}
     {% endif %}
 {% endfor %}
+{% endblock %}

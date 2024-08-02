@@ -1,9 +1,7 @@
+{% extends "layout.html" %}
+{% block previous %}/thread/{{ thr_id }}{% endblock %}
+{% block content %}
 <title>Kirjoita uusi viesti</title>
-<a href="/thread/{{ thr_id }}">← Takaisin</a>
-<br><br>
-Käyttäjä: <b>{{ session.username }}</b>
-<br>
-<a href="/logout">Kirjaudu ulos</a>
 <br><br>
 <form action="/send/{{ msg_id }}" method="POST" onsubmit="return check(this)">
 Uusi viesti:
@@ -25,3 +23,4 @@ Uusi viesti:
         return true;
     }
 </script>
+{% endblock %}

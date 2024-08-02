@@ -1,0 +1,9 @@
+<!doctype html>
+{% block back %}
+<a href="{% block previous %}{% endblock %}">← Takaisin</a>
+<br><br>
+{% endblock %}
+Käyttäjä: <b>{{ session.username }}</b>
+<br>
+<a href="/logout">Kirjaudu ulos</a>
+{% block content %}{% endblock %}

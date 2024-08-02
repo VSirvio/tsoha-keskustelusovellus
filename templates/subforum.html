@@ -1,9 +1,7 @@
+{% extends "layout.html" %}
+{% block previous %}/{% endblock %}
+{% block content %}
 <title>{{ title }} - Keskustelualue</title>
-<a href="/">← Takaisin</a>
-<br><br>
-Käyttäjä: <b>{{ session.username }}</b>
-<br>
-<a href="/logout">Kirjaudu ulos</a>
 <h3>{{ title }}</h3>
 <i>{{ desc }}</i>
 <br>
@@ -12,3 +10,4 @@ Käyttäjä: <b>{{ session.username }}</b>
     <hr>
     <a href="/thread/{{ thread.id }}">{{ thread.title }}</a>
 {% endfor %}
+{% endblock %}
