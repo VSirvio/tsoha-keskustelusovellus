@@ -1,5 +1,7 @@
 # Keskustelusovellus
 
+[Sovellus on kokeiltavissa Amazonin pilvipalvelussa](http://51.21.20.32:5000)
+
 Sovelluksessa näkyy keskustelualueita, joista jokaisella on tietty aihe. Alueilla on keskusteluketjuja, jotka muodostuvat viesteistä. Jokainen viesti on joko keskusteluketjun aloitusviesti tai vastaus toiseen viestiin. Jokainen käyttäjä on peruskäyttäjä tai ylläpitäjä.
 
 Sovelluksen ominaisuuksia:
