@@ -76,7 +76,8 @@ def subforum(subforum_id):
 
     thrs = threads.get_thrs(subforum_id)
 
-    return render_template("subforum.html", title=title, desc=desc, thrs=thrs)
+    return render_template("subforum.html", subforum_id=subforum_id,
+                           title=title, desc=desc, thrs=thrs)
 
 @app.route("/thread/<int:thr_id>")
 def thread(thr_id):
@@ -85,6 +86,32 @@ def thread(thr_id):
     thr = threads.get_thr(thr_id)
     first_msg = select_msg_tree(threads.get_1st_msg_id(thr_id))
     return render_template("thread.html", thread=thr, first_msg=first_msg)
+
+@app.route("/thread/new/<int:subforum_id>")
+def new_thr(subforum_id):
+    if "username" not in session:
+        return redirect(url_for("signin"))
+    return render_template("new_thread.html", subforum_id=subforum_id)
+
+@app.route("/thread/create/<int:subforum_id>", methods=["POST"])
+def create_thr(subforum_id):
+    if "username" not in session:
+        return redirect(url_for("signin"))
+
+    if session["csrf_token"] != request.form["csrf_token"]:
+        abort(403)
+
+    title = request.form["title"]
+    msg = request.form["message"]
+
+    if len(title) < 1 or len(title) > 30 or len(msg) < 1 or len(msg) > 100:
+        return redirect(url_for("new_thr", subforum_id=subforum_id))
+
+    user = users.get_user(session["username"])
+    thr_id = threads.new_thr(user.id, subforum_id, title)
+    messages.new_msg(None, user.id, thr_id, msg)
+
+    return redirect(f"/thread/{thr_id}")
 
 @app.route("/reply/<int:msg_id>")
 def message(msg_id):
