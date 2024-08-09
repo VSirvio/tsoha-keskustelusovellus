@@ -1,6 +1,6 @@
 # Keskustelusovellus
 
-[Sovellus on kokeiltavissa Amazonin pilvipalvelussa](http://51.21.20.32:5000) (Uusia tunnuksia ei voi vielä luoda. Sovelluksessa on tällä hetkellä kaksi valmista käyttäjää `User1` ja `User2`, joiden salasanat ovat `12345` ja `00000`)
+[Sovellus on kokeiltavissa Amazonin pilvipalvelussa](http://ec2-51-21-20-32.eu-north-1.compute.amazonaws.com:5000) (Uusia tunnuksia ei voi vielä luoda. Sovelluksessa on tällä hetkellä kaksi valmista käyttäjää `User1` ja `User2`, joiden salasanat ovat `12345` ja `00000`)
 
 Sovelluksessa näkyy keskustelualueita, joista jokaisella on tietty aihe. Alueilla on keskusteluketjuja, jotka muodostuvat viesteistä. Jokainen viesti on joko keskusteluketjun aloitusviesti tai vastaus toiseen viestiin. Jokainen käyttäjä on peruskäyttäjä tai ylläpitäjä.
 
