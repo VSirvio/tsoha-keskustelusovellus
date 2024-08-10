@@ -1,6 +1,6 @@
 # Keskustelusovellus
 
-[Sovellus on kokeiltavissa Amazonin pilvipalvelussa](http://ec2-51-21-20-32.eu-north-1.compute.amazonaws.com:5000)
+[Sovellus on kokeiltavissa Amazonin pilvipalvelussa](http://ec2-51-21-20-32.eu-north-1.compute.amazonaws.com:5000) (Ylläpitäjäkäyttäjän nimi on `Admin` ja salasana `asdasd`)
 
 Sovelluksessa näkyy keskustelualueita, joista jokaisella on tietty aihe. Alueilla on keskusteluketjuja, jotka muodostuvat viesteistä. Jokainen viesti on joko keskusteluketjun aloitusviesti tai vastaus toiseen viestiin. Jokainen käyttäjä on peruskäyttäjä tai ylläpitäjä.
 
@@ -50,4 +50,4 @@ Tällä hetkellä toteutettu:
 
         $ flask run
 
-7. Sovellus löytyy nyt osoitteesta <http://localhost:5000>.
+7. Sovellus löytyy nyt osoitteesta <http://localhost:5000>. Siihen on luettu testidatasta ylläpitäjäkäyttäjä `Admin`, jonka salasana on `asdasd`.

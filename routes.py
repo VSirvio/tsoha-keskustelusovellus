@@ -128,7 +128,8 @@ def thread(thr_id):
         return redirect(url_for("signin"))
     thr = threads.get_thr(thr_id)
     first_msg = select_msg_tree(threads.get_1st_msg_id(thr_id))
-    return render_template("thread.html", thread=thr, first_msg=first_msg)
+    return render_template("thread.html", thread=thr, first_msg=first_msg,
+                           admin=users.is_admin(session["username"]))
 
 @app.route("/thread/new/<int:subforum_id>")
 def new_thr(subforum_id):
@@ -190,7 +191,7 @@ def delete(msg_id):
     msg = messages.get_msg(msg_id)
 
     cur_user = users.get_user(session["username"])
-    if msg.uid != cur_user.id:
+    if msg.uid != cur_user.id and not users.is_admin(session["username"]):
         return redirect(f"/thread/{msg.thread}")
 
     is_1st_msg = messages.is_1st_msg_in_thr(msg_id)

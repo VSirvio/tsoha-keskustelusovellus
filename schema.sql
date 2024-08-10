@@ -1,7 +1,8 @@
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
     username TEXT UNIQUE,
-    password TEXT
+    password TEXT,
+    admin BOOLEAN DEFAULT FALSE
 );
 CREATE TABLE subforums (
     id SERIAL PRIMARY KEY,

@@ -6,6 +6,10 @@ INSERT INTO users (username, password) VALUES ('User1', 'scrypt:32768:8:1$QZcFXc
 -- password: 00000
 INSERT INTO users (username, password) VALUES ('User2', 'scrypt:32768:8:1$0WHsQVBijRO3ytem$9729bb758e59a21a26aef46d61c753a5d34ee2a307abe5f112121a89b512e19bd134fab49ab6166932ce66a6a3ae59ea15ffb4c15e8fac40077c4e0eb2bee207');
 
+-- username: Admin
+-- password: asdasd
+INSERT INTO users (username, password, admin) VALUES ('Admin', 'scrypt:32768:8:1$BUVPu9AjiLouxZCP$e8d5795f1f420eb38575b4a82ecd25ee3b3d4556036e16162ffd5e06f796cbc5738da3e40b25897e56f398e9daafdf9d4dc6ac14c955001e6b3618625cd829fb', TRUE);
+
 
 INSERT INTO subforums (title, description) VALUES ('Yleinen', 'Kaikki yleinen keskustelu');
 
