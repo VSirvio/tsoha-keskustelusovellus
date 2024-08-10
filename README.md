@@ -1,6 +1,6 @@
 # Keskustelusovellus
 
-[Sovellus on kokeiltavissa Amazonin pilvipalvelussa](http://ec2-51-21-20-32.eu-north-1.compute.amazonaws.com:5000) (Uusia tunnuksia ei voi vielä luoda. Sovelluksessa on tällä hetkellä kaksi valmista käyttäjää `User1` ja `User2`, joiden salasanat ovat `12345` ja `00000`)
+[Sovellus on kokeiltavissa Amazonin pilvipalvelussa](http://ec2-51-21-20-32.eu-north-1.compute.amazonaws.com:5000)
 
 Sovelluksessa näkyy keskustelualueita, joista jokaisella on tietty aihe. Alueilla on keskusteluketjuja, jotka muodostuvat viesteistä. Jokainen viesti on joko keskusteluketjun aloitusviesti tai vastaus toiseen viestiin. Jokainen käyttäjä on peruskäyttäjä tai ylläpitäjä.
 
@@ -19,15 +19,16 @@ Sovelluksen ominaisuuksia:
 
 Tällä hetkellä toteutettu:
 
-* Käyttäjä voi kirjautua sisään ja ulos (uutta tunnusta ei voi vielä luoda, testdata.sql:n suorittaminen luo kaksi valmista käyttäjää `User1` ja `User2`, joiden salasanat ovat `12345` ja `00000`).
-* Käyttäjä näkee sovelluksen etusivulla listan alueista (tällä hetkellä alueista ei näy vielä muita tietoja kuin alueen nimi ja lyhyt tekstuaalinen kuvaus, uusia ketjuja ei voi vielä luoda).
+* Käyttäjä voi kirjautua sisään ja ulos sekä luoda uuden tunnuksen.
+* Käyttäjä näkee sovelluksen etusivulla listan alueista (tällä hetkellä alueista ei näy vielä muita tietoja kuin alueen nimi ja lyhyt tekstuaalinen kuvaus).
+* Käyttäjä voi luoda alueelle uuden ketjun antamalla ketjun otsikon ja aloitusviestin sisällön.
 * Käyttäjä voi kirjoittaa ketjuun uuden viestin vastauksena olemassa olevaan viestiin.
 * Käyttäjä voi poistaa viestin (ketjuja ja viestejä ei vielä pysty muuten muokkaamaan, viestien hakutoimintoa ei ole vielä toteutettu).
 * Käyttäjä voi antaa ylä- tai alapeukun viestille. Käyttäjä voi myöhemmin muokata valintaansa.
 * Viestejä EI voi vielä lajitella millään perusteella.
 * Ylläpitäjäkäyttäjiä ja heihin liittyviä toimintoja EI ole vielä toteutettu.
 
-**Ohjeet sovelluksen testaamiseen:**
+**Ohjeet sovelluksen ajamiseen paikallisesti:**
 
 1. Kloonaa tämä repositorio omalle koneellesi ja siirry sen juurikansioon. Luo kansioon .env-tiedosto ja määritä sen sisältö seuraavanlaiseksi:
 
@@ -49,4 +50,4 @@ Tällä hetkellä toteutettu:
 
         $ flask run
 
-7. Sovellus löytyy nyt osoitteesta <http://localhost:5000>. Siihen on luettu testidatasta kaksi valmista testikäyttäjää `User1` ja `User2`, joiden salasanat ovat `12345` ja `00000`.
+7. Sovellus löytyy nyt osoitteesta <http://localhost:5000>.
