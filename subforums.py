@@ -2,7 +2,16 @@ from sqlalchemy.sql import text
 from db import db
 
 def get_subforums():
-    sql = text("SELECT id, title, description FROM subforums")
+    sql = text(
+        "SELECT F.id, F.title, F.description,"
+        " COUNT(DISTINCT T.id) AS threads,"
+        " COUNT(M.id) AS messages,"
+        " TO_CHAR(MAX(M.sent), 'DD.MM.YYYY klo HH24:MI') AS latest "
+        "FROM subforums F "
+        "LEFT JOIN threads T ON F.id = T.subforum "
+        "LEFT JOIN messages M ON T.id = M.thread "
+        "GROUP BY F.id ORDER BY F.id"
+    )
     return db.session.execute(sql).fetchall()
 
 def get_subforum(subforum_id : int):

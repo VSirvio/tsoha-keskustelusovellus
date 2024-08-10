@@ -2,9 +2,32 @@
 {% block back %}{% endblock %}
 {% block content %}
 <title>Keskustelualueet</title>
+<style>
+#latest {
+    font-size: smaller;
+    color: gray;
+}
+</style>
 <h3>Keskustelualueet</h3>
 {% for subforum in subforums %}
     <a href="/subforum/{{ subforum.id }}">{{ subforum.title }}</a>
+
+    {% if subforum.threads == 1 %}
+        (1 ketju,
+    {% else %}
+        ({{ subforum.threads }} ketjua,
+    {% endif %}
+
+    {% if subforum.messages == 1 %}
+        1 viesti)
+    {% else %}
+        {{ subforum.messages }} viestiä)
+    {% endif %}
+
+    {% if subforum.latest %}
+        <span id="latest">viimeisin viesti {{ subforum.latest }}</span>
+    {% endif %}
+
     <br>
     <i>{{ subforum.description }}</i>
     <hr>

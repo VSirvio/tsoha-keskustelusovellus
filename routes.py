@@ -76,28 +76,22 @@ def register():
     password = request.form["password"]
     password2 = request.form["password2"]
 
+    error_message = None
+
     if len(username) < 5:
         error_message = "Lyhin sallittu tunnuksen pituus on 5 merkkiä"
-        return render_template("registration.html", error=error_message)
-
-    if len(username) > 30:
+    elif len(username) > 30:
         error_message = "Pisin sallittu tunnuksen pituus on 30 merkkiä"
-        return render_template("registration.html", error=error_message)
-
-    if len(password) < 5:
+    elif len(password) < 5:
         error_message = "Lyhin sallittu salasanan pituus on 5 merkkiä"
-        return render_template("registration.html", error=error_message)
-
-    if len(password) > 30:
+    elif len(password) > 30:
         error_message = "Pisin sallittu salasanan pituus on 30 merkkiä"
-        return render_template("registration.html", error=error_message)
-
-    if password != password2:
+    elif password != password2:
         error_message = "Annetut salasanat eivät täsmää"
-        return render_template("registration.html", error=error_message)
-
-    if users.get_user(username):
+    elif users.get_user(username):
         error_message = "Antamasi tunnus on jo käytössä"
+
+    if error_message:
         return render_template("registration.html", error=error_message)
 
     users.register(username, generate_password_hash(password))

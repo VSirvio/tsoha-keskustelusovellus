@@ -12,29 +12,29 @@ INSERT INTO subforums (title, description) VALUES ('Yleinen', 'Kaikki yleinen ke
 
 INSERT INTO threads (uid, subforum, title) VALUES (1, 1, 'Joku keskustelu');
 
-INSERT INTO messages (uid, thread, content) VALUES (1, 1, 'Terve, maailma!');
+INSERT INTO messages (uid, thread, content, sent) VALUES (1, 1, 'Terve, maailma!', '2024-07-31 14:01:38.930457');
 INSERT INTO message_tree_paths (ancestor, descendant, depth) VALUES (1, 1, 0);
 INSERT INTO likes (uid, message, value) VALUES (1, 1, 1);
 
-INSERT INTO messages (uid, thread, content) VALUES (2, 1, 'Jotain muuta...');
+INSERT INTO messages (uid, thread, content, sent) VALUES (2, 1, 'Jotain muuta...', '2024-08-02 05:23:23.854873');
 INSERT INTO message_tree_paths (ancestor, descendant, depth) VALUES (2, 2, 0);
 INSERT INTO message_tree_paths (ancestor, descendant, depth) VALUES (1, 2, 1);
 
-INSERT INTO messages (uid, thread, content) VALUES (1, 1, 'Mitä muuta?');
+INSERT INTO messages (uid, thread, content, sent) VALUES (1, 1, 'Mitä muuta?', '2024-08-03 23:51:18.993457');
 INSERT INTO message_tree_paths (ancestor, descendant, depth) VALUES (3, 3, 0);
 INSERT INTO message_tree_paths (ancestor, descendant, depth) VALUES (1, 3, 2);
 INSERT INTO message_tree_paths (ancestor, descendant, depth) VALUES (2, 3, 1);
 INSERT INTO likes (uid, message, value) VALUES (1, 3, -1);
 INSERT INTO likes (uid, message, value) VALUES (2, 3, 1);
 
-INSERT INTO messages (uid, thread, content) VALUES (1, 1, 'Vielä yksi viesti.');
+INSERT INTO messages (uid, thread, content, sent) VALUES (1, 1, 'Vielä yksi viesti.', '2024-08-05 10:00:04.000128');
 INSERT INTO message_tree_paths (ancestor, descendant, depth) VALUES (4, 4, 0);
 INSERT INTO message_tree_paths (ancestor, descendant, depth) VALUES (1, 4, 1);
 
 
 INSERT INTO threads (uid, subforum, title) VALUES (1, 1, 'Joku toinen keskustelu');
 
-INSERT INTO messages (uid, thread, content) VALUES (1, 2, 'Pöö');
+INSERT INTO messages (uid, thread, content, sent) VALUES (1, 2, 'Pöö', '2024-08-06 15:55:41.034501');
 INSERT INTO message_tree_paths (ancestor, descendant, depth) VALUES (5, 5, 0);
 
 
@@ -43,5 +43,5 @@ INSERT INTO subforums (title, description) VALUES ('Satunnainen', 'Kaikki muu ke
 
 INSERT INTO threads (uid, subforum, title) VALUES (1, 2, 'Satunnainen keskustelu');
 
-INSERT INTO messages (uid, thread, content) VALUES (1, 3, 'Random viesti.');
+INSERT INTO messages (uid, thread, content, sent) VALUES (1, 3, 'Random viesti.', '2024-08-10 13:15:45.055162');
 INSERT INTO message_tree_paths (ancestor, descendant, depth) VALUES (6, 6, 0);

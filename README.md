@@ -20,7 +20,7 @@ Sovelluksen ominaisuuksia:
 Tällä hetkellä toteutettu:
 
 * Käyttäjä voi kirjautua sisään ja ulos sekä luoda uuden tunnuksen.
-* Käyttäjä näkee sovelluksen etusivulla listan alueista (tällä hetkellä alueista ei näy vielä muita tietoja kuin alueen nimi ja lyhyt tekstuaalinen kuvaus).
+* Käyttäjä näkee sovelluksen etusivulla listan alueista sekä jokaisen alueen ketjujen ja viestien määrän ja viimeksi lähetetyn viestin ajankohdan.
 * Käyttäjä voi luoda alueelle uuden ketjun antamalla ketjun otsikon ja aloitusviestin sisällön.
 * Käyttäjä voi kirjoittaa ketjuun uuden viestin vastauksena olemassa olevaan viestiin.
 * Käyttäjä voi poistaa viestin (ketjuja ja viestejä ei vielä pysty muuten muokkaamaan, viestien hakutoimintoa ei ole vielä toteutettu).

@@ -18,7 +18,8 @@ CREATE TABLE messages (
     id SERIAL PRIMARY KEY,
     uid INTEGER REFERENCES users ON DELETE CASCADE,
     thread INTEGER REFERENCES threads ON DELETE CASCADE,
-    content TEXT
+    content TEXT,
+    sent TIMESTAMP DEFAULT NOW()
 );
 CREATE TABLE message_tree_paths (
     ancestor INTEGER REFERENCES messages ON DELETE CASCADE,
