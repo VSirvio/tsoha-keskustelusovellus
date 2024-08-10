@@ -1,6 +1,6 @@
 import secrets
 from flask import render_template, redirect, abort, request, session, url_for
-from werkzeug.security import check_password_hash
+from werkzeug.security import check_password_hash, generate_password_hash
 from message_tree import Message
 from app import app
 import likes
@@ -31,6 +31,9 @@ def signin():
 
 @app.route("/login", methods=["POST"])
 def login():
+    if "username" in session:
+        return redirect(url_for("forums"))
+
     username = request.form["username"]
     password = request.form["password"]
 
@@ -57,6 +60,52 @@ def login():
 def logout():
     del session["username"]
     return redirect(url_for("signin"))
+
+@app.route("/registration")
+def registration():
+    if "username" in session:
+        return redirect(url_for("forums"))
+    return render_template("registration.html")
+
+@app.route("/register", methods=["POST"])
+def register():
+    if "username" in session:
+        return redirect(url_for("forums"))
+
+    username = request.form["username"]
+    password = request.form["password"]
+    password2 = request.form["password2"]
+
+    if len(username) < 5:
+        error_message = "Lyhin sallittu tunnuksen pituus on 5 merkkiä"
+        return render_template("registration.html", error=error_message)
+
+    if len(username) > 30:
+        error_message = "Pisin sallittu tunnuksen pituus on 30 merkkiä"
+        return render_template("registration.html", error=error_message)
+
+    if len(password) < 5:
+        error_message = "Lyhin sallittu salasanan pituus on 5 merkkiä"
+        return render_template("registration.html", error=error_message)
+
+    if len(password) > 30:
+        error_message = "Pisin sallittu salasanan pituus on 30 merkkiä"
+        return render_template("registration.html", error=error_message)
+
+    if password != password2:
+        error_message = "Annetut salasanat eivät täsmää"
+        return render_template("registration.html", error=error_message)
+
+    if users.get_user(username):
+        error_message = "Antamasi tunnus on jo käytössä"
+        return render_template("registration.html", error=error_message)
+
+    users.register(username, generate_password_hash(password))
+
+    session["username"] = username
+    session["csrf_token"] = secrets.token_hex(16)
+
+    return redirect(url_for("forums"))
 
 @app.route("/forums")
 def forums():

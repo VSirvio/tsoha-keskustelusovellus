@@ -1,0 +1,39 @@
+<title>Rekisteröidy - Keskustelusovellus</title>
+{% if error %}
+    <div style="color: red">{{ error }}</div>
+{% endif %}
+<form action="/register" method="POST" onsubmit="return check(this)">
+<p>Tunnus:<br>
+<input type="text" name="username" autofocus></p>
+<p>Salasana:<br>
+<input type="password" name="password"></p>
+<p>Salasana uudelleen:<br>
+<input type="password" name="password2"></p>
+<input type="submit" value="Rekisteröidy">
+</form>
+<a href="/">← Takaisin</a>
+<script>
+    function check(form) {
+        if (form.username.value.length < 5) {
+            alert("Lyhin sallittu tunnuksen pituus on 5 merkkiä");
+            return false;
+        }
+        if (form.username.value.length > 30) {
+            alert("Pisin sallittu tunnuksen pituus on 30 merkkiä");
+            return false;
+        }
+        if (form.password.value.length < 5) {
+            alert("Lyhin sallittu salasanan pituus on 5 merkkiä");
+            return false;
+        }
+        if (form.password.value.length > 30) {
+            alert("Pisin sallittu salasanan pituus on 30 merkkiä");
+            return false;
+        }
+        if (form.password.value != form.password2.value) {
+            alert("Annetut salasanat eivät täsmää");
+            return false;
+        }
+        return true;
+    }
+</script>
