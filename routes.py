@@ -203,6 +203,42 @@ def create_thr(subforum_id):
 
     return redirect(f"/thread/{thr_id}")
 
+@app.route("/thread/edit/<int:thr_id>")
+def edit_thr(thr_id):
+    if "username" not in session:
+        return redirect(url_for("signin"))
+
+    is_admin = users.is_admin(session["username"])
+    thr = threads.get_thr(thr_id)
+
+    if session["username"] != thr.username and not is_admin:
+        return redirect(url_for("thread", thr_id=thr_id))
+
+    return render_template("edit_thread.html", thr=thr)
+
+@app.route("/thread/save/<int:thr_id>", methods=["POST"])
+def save_thr(thr_id):
+    if "username" not in session:
+        return redirect(url_for("signin"))
+
+    is_admin = users.is_admin(session["username"])
+    thr = threads.get_thr(thr_id)
+
+    if session["username"] != thr.username and not is_admin:
+        return redirect(url_for("thread", thr_id=thr_id))
+
+    title = request.form["title"]
+
+    if len(title) < 1 or len(title) > 30:
+        return redirect(url_for("edit_thr", thr_id=thr_id))
+
+    if session["csrf_token"] != request.form["csrf_token"]:
+        abort(403)
+
+    threads.edit_thr(thr_id, title)
+
+    return redirect(url_for("thread", thr_id=thr_id))
+
 @app.route("/thread/delete/<int:thr_id>")
 def delete_thr(thr_id):
     if "username" not in session:

@@ -12,7 +12,7 @@ def get_thrs(subforum_id : int):
 
 def get_thr(thr_id : int):
     sql = text(
-        "SELECT T.uid, U.username, T.subforum, T.title "
+        "SELECT T.id, T.uid, U.username, T.subforum, T.title "
         "FROM threads T JOIN users U "
         "ON T.id = :thr_id AND U.id = T.uid"
     )
@@ -39,6 +39,11 @@ def new_thr(uid : int, subforum_id : int, title : str):
     thr = db.session.execute(sql, params).fetchone()
     db.session.commit()
     return thr.id
+
+def edit_thr(thr_id : int, title : str):
+    sql = text("UPDATE threads SET title = :title WHERE id = :id")
+    db.session.execute(sql, {"title": title, "id": thr_id})
+    db.session.commit()
 
 def delete_thr(thr_id : int):
     sql = text("DELETE FROM threads WHERE id = :thr_id")

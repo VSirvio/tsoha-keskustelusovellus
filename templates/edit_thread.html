@@ -1,0 +1,26 @@
+{% extends "layout.html" %}
+{% block previous %}/thread/{{ thr.id }}{% endblock %}
+{% block content %}
+<title>Muokkaa ketjun otsikkoa</title>
+<br><br>
+<form action="/thread/save/{{ thr.id }}" method="POST" onsubmit="return check(this)">
+Otsikko:
+<input type="text" name="title" value="{{ thr.title }}" autofocus>
+<br>
+<input type="submit" value="Tallenna">
+<input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+</form>
+<script>
+    function check(form) {
+        if (form.title.value.length < 1) {
+            alert("Lyhin sallittu otsikon pituus on 1");
+            return false;
+        }
+        if (form.title.value.length > 30) {
+            alert("Pisin sallittu otsikon pituus on 30");
+            return false;
+        }
+        return true;
+    }
+</script>
+{% endblock %}
