@@ -280,6 +280,42 @@ def send(orig_id):
 
     return redirect(f"/thread/{thr_id}")
 
+@app.route("/edit/<int:msg_id>")
+def edit(msg_id):
+    if "username" not in session:
+        return redirect(url_for("signin"))
+
+    user = users.get_user(session["username"])
+    msg = messages.get_msg(msg_id)
+
+    if user.id != msg.uid and not user.admin:
+        return redirect(url_for("thread", thr_id=msg.thread))
+
+    return render_template("edit_message.html", msg=msg)
+
+@app.route("/save/<int:msg_id>", methods=["POST"])
+def save(msg_id):
+    if "username" not in session:
+        return redirect(url_for("signin"))
+
+    user = users.get_user(session["username"])
+    msg = messages.get_msg(msg_id)
+
+    if user.id != msg.uid and not user.admin:
+        return redirect(url_for("thread", thr_id=msg.thread))
+
+    content = request.form["content"]
+
+    if len(content) < 1 or len(content) > 100:
+        return redirect(url_for("edit", msg_id=msg_id))
+
+    if session["csrf_token"] != request.form["csrf_token"]:
+        abort(403)
+
+    messages.edit_msg(msg_id, content)
+
+    return redirect(url_for("thread", thr_id=msg.thread))
+
 @app.route("/delete/<int:msg_id>")
 def delete(msg_id):
     if "username" not in session:

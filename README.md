@@ -23,7 +23,7 @@ Tällä hetkellä toteutettu:
 * Käyttäjä näkee sovelluksen etusivulla listan alueista sekä jokaisen alueen ketjujen ja viestien määrän ja viimeksi lähetetyn viestin ajankohdan.
 * Käyttäjä voi luoda alueelle uuden ketjun antamalla ketjun otsikon ja aloitusviestin sisällön.
 * Käyttäjä voi kirjoittaa ketjuun uuden viestin vastauksena olemassa olevaan viestiin.
-* Käyttäjä voi muokata luomansa ketjun otsikkoa (viestien sisältöä EI pysty vielä muokkaamaan). Käyttäjä voi myös poistaa ketjun tai viestin.
+* Käyttäjä voi muokata luomansa ketjun otsikkoa sekä lähettämänsä viestin sisältöä. Käyttäjä voi myös poistaa ketjun tai viestin.
 * Viestien hakutoimintoa EI ole vielä toteutettu.
 * Käyttäjä voi antaa ylä- tai alapeukun viestille. Käyttäjä voi myöhemmin muokata valintaansa.
 * Viestejä EI voi vielä lajitella millään perusteella.

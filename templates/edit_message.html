@@ -1,0 +1,26 @@
+{% extends "layout.html" %}
+{% block previous %}/thread/{{ msg.thread }}{% endblock %}
+{% block content %}
+<title>Muokkaa viestiä</title>
+<br><br>
+<form action="/save/{{ msg.id }}" method="POST" onsubmit="return check(this)">
+Viesti:
+<input type="text" name="content" value="{{ msg.content }}" autofocus>
+<br>
+<input type="submit" value="Tallenna">
+<input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+</form>
+<script>
+    function check(form) {
+        if (form.content.value.length < 1) {
+            alert("Lyhin sallittu viestin pituus on 1");
+            return false;
+        }
+        if (form.content.value.length > 100) {
+            alert("Pisin sallittu viestin pituus on 100");
+            return false;
+        }
+        return true;
+    }
+</script>
+{% endblock %}

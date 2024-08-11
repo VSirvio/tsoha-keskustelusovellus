@@ -13,6 +13,7 @@
 <br>
 <a href="/reply/{{ first_msg.id }}">Vastaa</a>
 {% if session.username == first_msg.user or is_admin %}
+    &nbsp;<a href="/edit/{{ first_msg.id }}">Muokkaa</a>
     &nbsp;<a href="/delete/{{ first_msg.id }}">Poista</a>
 {% endif %}
 <br>
@@ -36,6 +37,7 @@
     {{ "&nbsp;"|safe*(loop.depth * 4) }}
     <a href="/reply/{{ message.id }}">Vastaa</a>
     {% if session.username == message.user or is_admin %}
+        &nbsp;<a href="/edit/{{ message.id }}">Muokkaa</a>
         &nbsp;<a href="/delete/{{ message.id }}">Poista</a>
     {% endif %}
     <br>

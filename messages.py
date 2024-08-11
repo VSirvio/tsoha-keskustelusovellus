@@ -3,9 +3,9 @@ from db import db
 
 def get_msg(msg_id : int):
     sql = text(
-        "SELECT content, thread, uid, username "
-        "FROM messages JOIN users "
-        "ON messages.id = :msg_id AND users.id = messages.uid"
+        "SELECT M.id, M.content, M.thread, M.uid, U.username "
+        "FROM messages M JOIN users U "
+        "ON M.id = :msg_id AND U.id = M.uid"
     )
     return db.session.execute(sql, {"msg_id": msg_id}).fetchone()
 
@@ -50,6 +50,11 @@ def is_1st_msg_in_thr(msg_id : int):
     )
     path_count = db.session.execute(sql, {"msg_id": msg_id}).fetchone().paths
     return path_count == 1
+
+def edit_msg(msg_id : int, content : str):
+    sql = text("UPDATE messages SET content = :content WHERE id = :id")
+    db.session.execute(sql, {"content": content, "id": msg_id})
+    db.session.commit()
 
 def delete_msg(msg_id : int):
     sql = text(
