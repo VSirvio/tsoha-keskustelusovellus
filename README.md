@@ -26,7 +26,8 @@ Tällä hetkellä toteutettu:
 * Käyttäjä voi poistaa viestin (ketjuja ja viestejä ei vielä pysty muuten muokkaamaan, viestien hakutoimintoa ei ole vielä toteutettu).
 * Käyttäjä voi antaa ylä- tai alapeukun viestille. Käyttäjä voi myöhemmin muokata valintaansa.
 * Viestejä EI voi vielä lajitella millään perusteella.
-* Ylläpitäjäkäyttäjiä ja heihin liittyviä toimintoja EI ole vielä toteutettu.
+* Ylläpitäjä voi lisätä ja poistaa keskustelualueita.
+* Salaisia keskustelualueita EI voi vielä luoda.
 
 **Ohjeet sovelluksen ajamiseen paikallisesti:**
 
