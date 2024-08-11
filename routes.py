@@ -106,7 +106,8 @@ def forums():
     if "username" not in session:
         return redirect(url_for("signin"))
     forum_list = subforums.get_subforums()
-    return render_template("subforum_list.html", subforums=forum_list)
+    return render_template("subforum_list.html", subforums=forum_list,
+                           is_admin=users.is_admin(session["username"]))
 
 @app.route("/subforum/<int:subforum_id>")
 def subforum(subforum_id):
@@ -122,6 +123,18 @@ def subforum(subforum_id):
     return render_template("subforum.html", subforum_id=subforum_id,
                            title=title, desc=desc, thrs=thrs)
 
+@app.route("/subforum/delete/<int:subforum_id>")
+def delete_subforum(subforum_id):
+    if "username" not in session:
+        return redirect(url_for("signin"))
+
+    if not users.is_admin(session["username"]):
+        return redirect(url_for("forums"))
+
+    subforums.delete_subforum(subforum_id)
+
+    return redirect(url_for("forums"))
+
 @app.route("/thread/<int:thr_id>")
 def thread(thr_id):
     if "username" not in session:
@@ -129,7 +142,7 @@ def thread(thr_id):
     thr = threads.get_thr(thr_id)
     first_msg = select_msg_tree(threads.get_1st_msg_id(thr_id))
     return render_template("thread.html", thread=thr, first_msg=first_msg,
-                           admin=users.is_admin(session["username"]))
+                           is_admin=users.is_admin(session["username"]))
 
 @app.route("/thread/new/<int:subforum_id>")
 def new_thr(subforum_id):

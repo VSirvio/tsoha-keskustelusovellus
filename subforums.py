@@ -17,3 +17,8 @@ def get_subforums():
 def get_subforum(subforum_id : int):
     sql = text("SELECT title, description FROM subforums WHERE id = :id")
     return db.session.execute(sql, {"id": subforum_id}).fetchone()
+
+def delete_subforum(subforum_id : int):
+    sql = text("DELETE FROM subforums WHERE id = :id")
+    db.session.execute(sql, {"id": subforum_id})
+    db.session.commit()

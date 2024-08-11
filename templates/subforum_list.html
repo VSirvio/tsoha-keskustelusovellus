@@ -30,6 +30,12 @@
 
     <br>
     <i>{{ subforum.description }}</i>
+
+    {% if is_admin %}
+        <br>
+        <a href="/subforum/delete/{{ subforum.id }}">Poista</a>
+    {% endif %}
+
     <hr>
 {% endfor %}
 {% endblock %}
