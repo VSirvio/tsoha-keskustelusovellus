@@ -123,6 +123,38 @@ def subforum(subforum_id):
     return render_template("subforum.html", subforum_id=subforum_id,
                            title=title, desc=desc, thrs=thrs)
 
+@app.route("/subforum/new")
+def new_subforum():
+    if "username" not in session:
+        return redirect(url_for("signin"))
+
+    if not users.is_admin(session["username"]):
+        return redirect(url_for("forums"))
+
+    return render_template("new_subforum.html")
+
+@app.route("/subforum/create", methods=["POST"])
+def create_subforum():
+    if "username" not in session:
+        return redirect(url_for("signin"))
+
+    if not users.is_admin(session["username"]):
+        return redirect(url_for("forums"))
+
+    if session["csrf_token"] != request.form["csrf_token"]:
+        abort(403)
+
+    title = request.form["title"]
+    desc = request.form["description"]
+
+    if len(title) < 1 or len(title) > 30 or len(desc) < 1 or len(desc) > 100:
+        return redirect(url_for("forums"))
+
+    subforums.new_subforum(title, desc)
+
+    return redirect(url_for("forums"))
+
+
 @app.route("/subforum/delete/<int:subforum_id>")
 def delete_subforum(subforum_id):
     if "username" not in session:

@@ -8,7 +8,12 @@
     color: gray;
 }
 </style>
-<h3>Keskustelualueet</h3>
+<br><br>
+<h3 style="display: inline">Keskustelualueet</h3>
+{% if is_admin %}
+    &nbsp;<a href="/subforum/new" style="font-size: smaller">Luo uusi alue</a>
+{% endif %}
+<br><br>
 {% for subforum in subforums %}
     <a href="/subforum/{{ subforum.id }}">{{ subforum.title }}</a>
 

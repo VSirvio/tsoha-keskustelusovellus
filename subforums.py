@@ -18,6 +18,13 @@ def get_subforum(subforum_id : int):
     sql = text("SELECT title, description FROM subforums WHERE id = :id")
     return db.session.execute(sql, {"id": subforum_id}).fetchone()
 
+def new_subforum(title : str, desc : str):
+    sql = text(
+        "INSERT INTO subforums (title, description) VALUES (:title, :desc)"
+    )
+    db.session.execute(sql, {"title": title, "desc": desc})
+    db.session.commit()
+
 def delete_subforum(subforum_id : int):
     sql = text("DELETE FROM subforums WHERE id = :id")
     db.session.execute(sql, {"id": subforum_id})
