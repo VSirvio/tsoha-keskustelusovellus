@@ -2,11 +2,20 @@ from sqlalchemy.sql import text
 from db import db
 
 def get_thrs(subforum_id : int):
-    sql = text("SELECT id, uid, title FROM threads WHERE subforum = :subforum")
+    sql = text(
+        "SELECT T.id, T.uid, U.username, T.title "
+        "FROM threads T JOIN users U "
+        "ON T.subforum = :subforum AND U.id = T.uid "
+        "ORDER BY T.id"
+    )
     return db.session.execute(sql, {"subforum": subforum_id}).fetchall()
 
 def get_thr(thr_id : int):
-    sql = text("SELECT uid, subforum, title FROM threads WHERE id = :thr_id")
+    sql = text(
+        "SELECT T.uid, U.username, T.subforum, T.title "
+        "FROM threads T JOIN users U "
+        "ON T.id = :thr_id AND U.id = T.uid"
+    )
     return db.session.execute(sql, {"thr_id": thr_id}).fetchone()
 
 def get_subforum_id(thr_id : int):
