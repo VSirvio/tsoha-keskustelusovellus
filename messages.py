@@ -65,7 +65,7 @@ def delete_msg(msg_id : int):
     db.session.execute(sql, {"msg_id": msg_id})
     db.session.commit()
 
-def search(search_terms : str):
+def search(search_terms : list[str]):
     sql = text(
         "SELECT M.id, M.content, U.username, M.thread, T.title AS thr_title "
         "FROM messages M "
