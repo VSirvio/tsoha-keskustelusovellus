@@ -3,10 +3,16 @@ from db import db
 
 def get_thrs(subforum_id : int):
     sql = text(
-        "SELECT T.id, T.uid, U.username, T.title "
-        "FROM threads T JOIN users U "
-        "ON T.subforum = :subforum AND U.id = T.uid "
-        "ORDER BY T.id"
+        "SELECT T.id, T.uid, username, title, COALESCE(SUM(value),0) AS likes "
+        "FROM threads T "
+        "LEFT JOIN users U ON U.id = T.uid "
+        "LEFT JOIN messages M ON thread = T.id "
+        "LEFT JOIN likes ON message = M.id "
+        "WHERE subforum = :subforum AND "
+        "("
+        " SELECT COUNT(*) FROM message_tree_paths WHERE descendant = M.id "
+        ") = 1 "
+        "GROUP BY T.id, username ORDER BY T.id"
     )
     return db.session.execute(sql, {"subforum": subforum_id}).fetchall()
 
