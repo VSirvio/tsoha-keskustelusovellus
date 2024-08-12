@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+{% block previous %}/{% endblock %}
+{% block content %}
+<title>Haku</title>
+<h3>Hakutulokset</h3>
+{% for result in results %}
+    <hr>
+    <a href="/thread/{{ result.thread }}">
+        <b>{{ result.username }}</b>:
+        {{ result.content }}
+        (<i>ketjussa {{ result.thr_title }}</i>)
+    </a>
+{% endfor %}
+{% endblock %}

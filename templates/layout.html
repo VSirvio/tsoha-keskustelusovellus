@@ -6,4 +6,25 @@
 Käyttäjä: <b>{{ session.username }}</b>
 <br>
 <a href="/logout">Kirjaudu ulos</a>
+<br><br>
+<form action="/search" method="POST" onsubmit="return check_search_terms(this)">
+Haku:
+<input type="text" name="search_terms">
+<input type="submit" value="Hae">
+<input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+</form>
+<script>
+    function check_search_terms(form) {
+        var terms = form.search_terms.value.match(/[\p{Letter}\w]+/ug);
+        if (terms == null || terms.length < 1) {
+            alert("Pienin sallittu hakutermien määrä on 1");
+            return false;
+        }
+        if (terms.length > 5) {
+            alert("Suurin sallittu hakutermien määrä on 5");
+            return false;
+        }
+        return true;
+    }
+</script>
 {% block content %}{% endblock %}

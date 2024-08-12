@@ -1,3 +1,4 @@
+import re
 import secrets
 from flask import render_template, redirect, abort, request, session, url_for
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -370,3 +371,20 @@ def unlike(msg_id):
     likes.unlike(user.id, msg_id)
 
     return redirect(f"/thread/{messages.get_msg(msg_id).thread}")
+
+@app.route("/search", methods=["POST"])
+def search():
+    if "username" not in session:
+        return redirect(url_for("signin"))
+
+    if session["csrf_token"] != request.form["csrf_token"]:
+        abort(403)
+
+    search_terms = re.findall(r"\w+", request.form["search_terms"])
+
+    if len(search_terms) < 1 or len(search_terms) > 5:
+        return redirect(url_for("forums"))
+
+    results = messages.search(search_terms)
+
+    return render_template("search_results.html", results=results)

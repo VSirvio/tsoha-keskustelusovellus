@@ -11,7 +11,7 @@ Sovelluksen ominaisuuksia:
 * Käyttäjä voi luoda alueelle uuden ketjun antamalla ketjun otsikon ja aloitusviestin sisällön.
 * Käyttäjä voi kirjoittaa ketjuun uuden viestin vastauksena olemassa olevaan viestiin.
 * Käyttäjä voi muokata luomansa ketjun otsikkoa sekä lähettämänsä viestin sisältöä. Käyttäjä voi myös poistaa ketjun tai viestin.
-* Käyttäjä voi etsiä kaikki viestit, joiden osana on annettu sana.
+* Käyttäjä voi etsiä kaikki viestit, jotka sisältävät annetut sanat.
 * Käyttäjä voi antaa ylä- tai alapeukun viestille. Käyttäjä voi myöhemmin muokata valintaansa.
 * Käyttäjä voi lajitella keskustelualueen ketjut ja keskusteluketjun viestit lähetysajan tai yläpeukkujen määrän mukaan.
 * Ylläpitäjä voi lisätä ja poistaa keskustelualueita.
@@ -24,7 +24,7 @@ Tällä hetkellä toteutettu:
 * Käyttäjä voi luoda alueelle uuden ketjun antamalla ketjun otsikon ja aloitusviestin sisällön.
 * Käyttäjä voi kirjoittaa ketjuun uuden viestin vastauksena olemassa olevaan viestiin.
 * Käyttäjä voi muokata luomansa ketjun otsikkoa sekä lähettämänsä viestin sisältöä. Käyttäjä voi myös poistaa ketjun tai viestin.
-* Viestien hakutoimintoa EI ole vielä toteutettu.
+* Käyttäjä voi etsiä kaikki viestit, jotka sisältävät annetut sanat.
 * Käyttäjä voi antaa ylä- tai alapeukun viestille. Käyttäjä voi myöhemmin muokata valintaansa.
 * Viestejä EI voi vielä lajitella millään perusteella.
 * Ylläpitäjä voi lisätä ja poistaa keskustelualueita.
