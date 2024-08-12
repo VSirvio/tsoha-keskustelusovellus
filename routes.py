@@ -382,7 +382,7 @@ def search():
 
     search_terms = re.findall(r"\w+", request.form["search_terms"])
 
-    if len(search_terms) < 1 or len(search_terms) > 5:
+    if len(search_terms) < 1 or len(search_terms) > 10:
         return redirect(url_for("forums"))
 
     results = messages.search(search_terms)

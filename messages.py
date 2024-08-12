@@ -1,4 +1,3 @@
-import itertools
 from sqlalchemy.sql import text
 from db import db
 
@@ -66,16 +65,17 @@ def delete_msg(msg_id : int):
     db.session.execute(sql, {"msg_id": msg_id})
     db.session.commit()
 
-def search(search_terms : str):
-    term_combos = itertools.permutations(search_terms)
-    combo_patterns = [r"\W(.*\W)?".join(combo) for combo in term_combos]
-    pattern = r"(^|\W)" + "|".join(combo_patterns) + r"($|\W)"
+def search(terms : str):
+    indices = range(len(terms))
+    pattern_match_conditions = [f"M.content ~* :pattern{i}" for i in indices]
+    joined_condition = " AND ".join(pattern_match_conditions)
 
     sql = text(
         "SELECT M.id, M.content, U.username, M.thread, T.title AS thr_title "
         "FROM messages M "
         "JOIN users U ON U.id = M.uid "
         "JOIN threads T ON T.id = M.thread "
-        "WHERE M.content ~* :pattern"
+        "WHERE " + joined_condition
     )
-    return db.session.execute(sql, {"pattern": pattern}).fetchall()
+    params = {f"pattern{i}" : f"(^|\\W){terms[i]}($|\\W)" for i in indices}
+    return db.session.execute(sql, params).fetchall()
