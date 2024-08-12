@@ -65,17 +65,12 @@ def delete_msg(msg_id : int):
     db.session.execute(sql, {"msg_id": msg_id})
     db.session.commit()
 
-def search(terms : str):
-    indices = range(len(terms))
-    pattern_match_conditions = [f"M.content ~* :pattern{i}" for i in indices]
-    joined_condition = " AND ".join(pattern_match_conditions)
-
+def search(search_terms : str):
     sql = text(
         "SELECT M.id, M.content, U.username, M.thread, T.title AS thr_title "
         "FROM messages M "
         "JOIN users U ON U.id = M.uid "
         "JOIN threads T ON T.id = M.thread "
-        "WHERE " + joined_condition
+        "WHERE regexp_split_to_array(lower(content), '\\W+') @> :search_terms"
     )
-    params = {f"pattern{i}" : f"(^|\\W){terms[i]}($|\\W)" for i in indices}
-    return db.session.execute(sql, params).fetchall()
+    return db.session.execute(sql, {"search_terms": search_terms}).fetchall()

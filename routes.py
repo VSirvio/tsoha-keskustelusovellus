@@ -380,7 +380,7 @@ def search():
     if session["csrf_token"] != request.form["csrf_token"]:
         abort(403)
 
-    search_terms = re.findall(r"\w+", request.form["search_terms"])
+    search_terms = re.findall(r"\w+", request.form["search_terms"].lower())
 
     if len(search_terms) < 1 or len(search_terms) > 10:
         return redirect(url_for("forums"))
