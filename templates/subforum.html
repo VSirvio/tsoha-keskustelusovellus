@@ -1,12 +1,12 @@
 {% extends "layout.html" %}
 {% block previous %}/{% endblock %}
 {% block content %}
-<title>{{ title }} - Keskustelualue</title>
+<title>{{ subforum.title }} - Keskustelualue</title>
 <br>
-<h3 style="display: inline">{{ title }}</h3>
-&nbsp;<a href="/thread/new/{{ subforum_id }}" style="font-size: smaller">Luo uusi ketju</a>
+<h3 style="display: inline">{{ subforum.title }}</h3>
+&nbsp;<a href="/thread/new/{{ subforum.id }}" style="font-size: smaller">Luo uusi ketju</a>
 <br>
-<i>{{ desc }}</i>
+<i>{{ subforum.description }}</i>
 <br>
 <br>
 {% for thread in thrs %}

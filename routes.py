@@ -116,13 +116,9 @@ def subforum(subforum_id):
         return redirect(url_for("signin"))
 
     cur_subforum = subforums.get_subforum(subforum_id)
-    title = cur_subforum.title
-    desc = cur_subforum.description
-
     thrs = threads.get_thrs(subforum_id)
 
-    return render_template("subforum.html", subforum_id=subforum_id,
-                           title=title, desc=desc, thrs=thrs,
+    return render_template("subforum.html", subforum=cur_subforum, thrs=thrs,
                            is_admin=users.is_admin(session["username"]))
 
 @app.route("/subforum/new")
