@@ -13,17 +13,18 @@ def get_thrs(subforum_id : int, order_by : str):
             order = "likes ASC"
 
     sql = text(
-        "SELECT T.id, T.uid, T.title,"
-        " (SELECT U.username FROM users U WHERE U.id = T.uid) AS username,"
-        " ("
-        "  SELECT COALESCE(SUM(value),0) FROM likes WHERE message = first_msg "
-        " ) AS likes,"
-        " MAX(sent) AS last_msg,"
-        " TO_CHAR(MAX(sent), 'DD.MM.YYYY klo HH24:MI') AS time_str "
+        "SELECT T.id, T.uid, T.title, U.username, L.last_msg,"
+        " TO_CHAR(L.last_msg, 'DD.MM.YYYY klo HH24:MI') AS time_str,"
+        " COALESCE(SUM(I.value),0) AS likes "
         "FROM threads T "
-        "LEFT JOIN messages ON thread = T.id "
-        "WHERE subforum = :subforum "
-        "GROUP BY T.id ORDER BY " + order
+        "LEFT JOIN users U ON U.id = T.uid "
+        "LEFT JOIN likes I ON I.message = T.first_msg "
+        "LEFT JOIN ("
+        " SELECT M.thread, MAX(M.sent) AS last_msg"
+        " FROM messages M GROUP BY thread "
+        ") L ON L.thread = T.id "
+        "WHERE T.subforum = :subforum "
+        "GROUP BY T.id, U.username, L.last_msg ORDER BY " + order
     )
     return db.session.execute(sql, {"subforum": subforum_id}).fetchall()
 
