@@ -175,7 +175,7 @@ def thread(thr_id):
     if "username" not in session:
         return redirect(url_for("signin"))
     thr = threads.get_thr(thr_id)
-    first_msg = select_msg_tree(threads.get_1st_msg_id(thr_id))
+    first_msg = select_msg_tree(thr.first_msg)
     return render_template("thread.html", thread=thr, first_msg=first_msg,
                            is_admin=users.is_admin(session["username"]))
 
@@ -200,8 +200,7 @@ def create_thr(subforum_id):
         return redirect(url_for("new_thr", subforum_id=subforum_id))
 
     user = users.get_user(session["username"])
-    thr_id = threads.new_thr(user.id, subforum_id, title)
-    messages.new_msg(None, user.id, thr_id, msg)
+    thr_id = threads.new_thr(user.id, subforum_id, title, msg)
 
     return redirect(f"/thread/{thr_id}")
 
@@ -330,12 +329,11 @@ def delete(msg_id):
         return redirect(f"/thread/{msg.thread}")
 
     is_1st_msg = messages.is_1st_msg_in_thr(msg_id)
+    subforum_id = threads.get_subforum_id(msg.thread)
 
     messages.delete_msg(msg_id)
 
     if is_1st_msg:
-        subforum_id = threads.get_subforum_id(msg.thread)
-        threads.delete_thr(msg.thread)
         return redirect(f"/subforum/{subforum_id}")
 
     return redirect(f"/thread/{msg.thread}")

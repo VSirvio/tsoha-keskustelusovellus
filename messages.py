@@ -42,14 +42,15 @@ def new_msg(orig_id : int, uid : int, thr_id : int, content : str):
     db.session.execute(sql, {"msg_id": msg.id, "orig_id": orig_id})
     db.session.commit()
 
+    return msg.id
+
 def is_1st_msg_in_thr(msg_id : int):
     sql = text(
-        "SELECT COUNT(*) AS paths "
-        "FROM message_tree_paths "
-        "WHERE descendant = :msg_id"
+        "SELECT M.id = T.first_msg AS is_first FROM messages M "
+        "JOIN threads T ON T.id = M.thread "
+        "WHERE M.id = :msg_id"
     )
-    path_count = db.session.execute(sql, {"msg_id": msg_id}).fetchone().paths
-    return path_count == 1
+    return db.session.execute(sql, {"msg_id": msg_id}).fetchone().is_first
 
 def edit_msg(msg_id : int, content : str):
     sql = text("UPDATE messages SET content = :content WHERE id = :id")

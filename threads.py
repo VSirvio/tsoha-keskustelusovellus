@@ -1,5 +1,6 @@
 from sqlalchemy.sql import text
 from db import db
+import messages
 
 def get_thrs(subforum_id : int, order_by : str):
     order = "last_msg DESC"
@@ -12,23 +13,20 @@ def get_thrs(subforum_id : int, order_by : str):
             order = "likes ASC"
 
     sql = text(
-        "SELECT T.id, T.uid, username, title, COALESCE(SUM(value),0) AS likes,"
+        "SELECT T.id, T.uid, T.title,"
+        " (SELECT U.username FROM users U WHERE U.id = T.uid) AS username,"
+        " ("
+        "  SELECT COALESCE(SUM(value),0) FROM likes WHERE message = first_msg "
+        " ) AS likes,"
         " (SELECT MAX(sent) FROM messages WHERE thread = T.id) AS last_msg "
-        "FROM threads T "
-        "LEFT JOIN users U ON U.id = T.uid "
-        "LEFT JOIN messages M ON thread = T.id "
-        "LEFT JOIN likes ON message = M.id "
-        "WHERE subforum = :subforum AND "
-        "("
-        " SELECT COUNT(*) FROM message_tree_paths WHERE descendant = M.id "
-        ") = 1 "
-        "GROUP BY T.id, username ORDER BY " + order
+        "FROM threads T WHERE subforum = :subforum "
+        "GROUP BY T.id ORDER BY " + order
     )
     return db.session.execute(sql, {"subforum": subforum_id}).fetchall()
 
 def get_thr(thr_id : int):
     sql = text(
-        "SELECT T.id, T.uid, U.username, T.subforum, T.title "
+        "SELECT T.id, T.uid, U.username, T.subforum, T.title, T.first_msg "
         "FROM threads T JOIN users U "
         "ON T.id = :thr_id AND U.id = T.uid"
     )
@@ -38,14 +36,7 @@ def get_subforum_id(thr_id : int):
     sql = text("SELECT subforum FROM threads WHERE id = :thr_id")
     return db.session.execute(sql, {"thr_id": thr_id}).fetchone().subforum
 
-def get_1st_msg_id(thr_id : int):
-    sql = text(
-        "SELECT id FROM messages WHERE thread = :thr_id AND"
-        " (SELECT COUNT(*) FROM message_tree_paths WHERE descendant = id) = 1"
-    )
-    return db.session.execute(sql, {"thr_id": thr_id}).fetchone().id
-
-def new_thr(uid : int, subforum_id : int, title : str):
+def new_thr(uid : int, subforum_id : int, title : str, msg : str):
     sql = text(
         "INSERT INTO threads "
         "(uid, subforum, title) VALUES (:uid, :subforum_id, :title) "
@@ -54,6 +45,13 @@ def new_thr(uid : int, subforum_id : int, title : str):
     params = {"uid": uid, "subforum_id": subforum_id, "title": title}
     thr = db.session.execute(sql, params).fetchone()
     db.session.commit()
+
+    msg_id = messages.new_msg(None, uid, thr.id, msg)
+
+    sql = text("UPDATE threads SET first_msg = :first_msg WHERE id = :id")
+    db.session.execute(sql, {"first_msg": msg_id, "id": thr.id})
+    db.session.commit()
+
     return thr.id
 
 def edit_thr(thr_id : int, title : str):

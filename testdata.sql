@@ -1,3 +1,6 @@
+BEGIN;
+
+
 -- username: User1
 -- password: 12345
 INSERT INTO users (username, password) VALUES ('User1', 'scrypt:32768:8:1$QZcFXcdiLfhqsAZg$10288da3121ac08d1b133bf50429f5b09060b95dab3f07488f5711eac6e928e00a6eba45c8b1a90dff42c24843aa2f159debeea398b609d3c50a800ba542bc83');
@@ -14,7 +17,7 @@ INSERT INTO users (username, password, admin) VALUES ('Admin', 'scrypt:32768:8:1
 INSERT INTO subforums (title, description) VALUES ('Yleinen', 'Kaikki yleinen keskustelu');
 
 
-INSERT INTO threads (uid, subforum, title) VALUES (1, 1, 'Joku keskustelu');
+INSERT INTO threads (uid, subforum, title, first_msg) VALUES (1, 1, 'Joku keskustelu', 1);
 
 INSERT INTO messages (uid, thread, content, sent) VALUES (1, 1, 'Terve, maailma!', '2024-07-31 14:01:38.930457');
 INSERT INTO message_tree_paths (ancestor, descendant, depth) VALUES (1, 1, 0);
@@ -36,7 +39,7 @@ INSERT INTO message_tree_paths (ancestor, descendant, depth) VALUES (4, 4, 0);
 INSERT INTO message_tree_paths (ancestor, descendant, depth) VALUES (1, 4, 1);
 
 
-INSERT INTO threads (uid, subforum, title) VALUES (1, 1, 'Joku toinen keskustelu');
+INSERT INTO threads (uid, subforum, title, first_msg) VALUES (1, 1, 'Joku toinen keskustelu', 5);
 
 INSERT INTO messages (uid, thread, content, sent) VALUES (1, 2, 'Pöö', '2024-08-06 15:55:41.034501');
 INSERT INTO message_tree_paths (ancestor, descendant, depth) VALUES (5, 5, 0);
@@ -45,7 +48,10 @@ INSERT INTO message_tree_paths (ancestor, descendant, depth) VALUES (5, 5, 0);
 INSERT INTO subforums (title, description) VALUES ('Satunnainen', 'Kaikki muu keskustelu');
 
 
-INSERT INTO threads (uid, subforum, title) VALUES (1, 2, 'Satunnainen keskustelu');
+INSERT INTO threads (uid, subforum, title, first_msg) VALUES (1, 2, 'Satunnainen keskustelu', 6);
 
 INSERT INTO messages (uid, thread, content, sent) VALUES (1, 3, 'Random viesti.', '2024-08-10 13:15:45.055162');
 INSERT INTO message_tree_paths (ancestor, descendant, depth) VALUES (6, 6, 0);
+
+
+COMMIT;
