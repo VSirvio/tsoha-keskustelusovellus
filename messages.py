@@ -9,11 +9,23 @@ def get_msg(msg_id : int):
     )
     return db.session.execute(sql, {"msg_id": msg_id}).fetchone()
 
-def get_replies(msg_id : int):
+def get_replies(msg_id : int, order_by : str):
+    order = "sent DESC"
+    match order_by:
+        case "oldest":
+            order = "sent ASC"
+        case "most_liked":
+            order = "likes DESC"
+        case "most_disliked":
+            order = "likes ASC"
+
     sql = text(
-        "SELECT descendant AS id "
+        "SELECT descendant AS id, M.sent, COALESCE(SUM(L.value),0) AS likes "
         "FROM message_tree_paths "
-        "WHERE ancestor = :msg_id AND depth = 1"
+        "LEFT JOIN messages M ON M.id = descendant "
+        "LEFT JOIN likes L ON L.message = M.id "
+        "WHERE ancestor = :msg_id AND depth = 1 "
+        "GROUP BY descendant, M.sent ORDER BY " + order
     )
     return db.session.execute(sql, {"msg_id": msg_id}).fetchall()
 

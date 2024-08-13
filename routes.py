@@ -10,7 +10,7 @@ import subforums
 import threads
 import users
 
-def select_msg_tree(msg_id : int):
+def select_msg_tree(msg_id : int, order_by : str):
     msg = messages.get_msg(msg_id)
     user = users.get_user(session["username"])
 
@@ -18,9 +18,9 @@ def select_msg_tree(msg_id : int):
     cur_msg.likes = likes.get_total_likes(msg_id)
     cur_msg.liked = likes.voted_by_user(msg_id, user.id)
 
-    replies = messages.get_replies(msg_id)
+    replies = messages.get_replies(msg_id, order_by)
     for reply in replies:
-        cur_msg.add_reply(select_msg_tree(reply.id))
+        cur_msg.add_reply(select_msg_tree(reply.id, order_by))
 
     return cur_msg
 
@@ -174,10 +174,14 @@ def delete_subforum(subforum_id):
 def thread(thr_id):
     if "username" not in session:
         return redirect(url_for("signin"))
+
+    order_by = request.args.get("order_by")
     thr = threads.get_thr(thr_id)
-    first_msg = select_msg_tree(thr.first_msg)
+    first_msg = select_msg_tree(thr.first_msg, order_by)
+
     return render_template("thread.html", thread=thr, first_msg=first_msg,
-                           is_admin=users.is_admin(session["username"]))
+                           is_admin=users.is_admin(session["username"]),
+                           order_by=order_by)
 
 @app.route("/thread/new/<int:subforum_id>")
 def new_thr(subforum_id):
