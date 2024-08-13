@@ -1,9 +1,19 @@
 from sqlalchemy.sql import text
 from db import db
 
-def get_thrs(subforum_id : int):
+def get_thrs(subforum_id : int, order_by : str):
+    order = "last_msg DESC"
+    match order_by:
+        case "oldest":
+            order = "last_msg ASC"
+        case "most_liked":
+            order = "likes DESC"
+        case "most_disliked":
+            order = "likes ASC"
+
     sql = text(
-        "SELECT T.id, T.uid, username, title, COALESCE(SUM(value),0) AS likes "
+        "SELECT T.id, T.uid, username, title, COALESCE(SUM(value),0) AS likes,"
+        " (SELECT MAX(sent) FROM messages WHERE thread = T.id) AS last_msg "
         "FROM threads T "
         "LEFT JOIN users U ON U.id = T.uid "
         "LEFT JOIN messages M ON thread = T.id "
@@ -12,7 +22,7 @@ def get_thrs(subforum_id : int):
         "("
         " SELECT COUNT(*) FROM message_tree_paths WHERE descendant = M.id "
         ") = 1 "
-        "GROUP BY T.id, username ORDER BY T.id"
+        "GROUP BY T.id, username ORDER BY " + order
     )
     return db.session.execute(sql, {"subforum": subforum_id}).fetchall()
 

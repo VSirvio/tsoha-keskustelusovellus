@@ -115,11 +115,16 @@ def subforum(subforum_id):
     if "username" not in session:
         return redirect(url_for("signin"))
 
+    order_by = request.args.get("order_by")
+    if order_by not in ["newest", "oldest", "most_liked", "most_disliked"]:
+        order_by = "newest"
+
     cur_subforum = subforums.get_subforum(subforum_id)
-    thrs = threads.get_thrs(subforum_id)
+    thrs = threads.get_thrs(subforum_id, order_by)
 
     return render_template("subforum.html", subforum=cur_subforum, thrs=thrs,
-                           is_admin=users.is_admin(session["username"]))
+                           is_admin=users.is_admin(session["username"]),
+                           order_by=order_by)
 
 @app.route("/subforum/new")
 def new_subforum():
