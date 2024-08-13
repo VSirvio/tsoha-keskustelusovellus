@@ -26,7 +26,7 @@ Tällä hetkellä toteutettu:
 * Käyttäjä voi muokata luomansa ketjun otsikkoa sekä lähettämänsä viestin sisältöä. Käyttäjä voi myös poistaa ketjun tai viestin.
 * Käyttäjä voi etsiä kaikki viestit, jotka sisältävät annetut sanat.
 * Käyttäjä voi antaa ylä- tai alapeukun viestille. Käyttäjä voi myöhemmin muokata valintaansa.
-* Viestejä EI voi vielä lajitella millään perusteella.
+* Käyttäjä voi lajitella keskustelualueen ketjut ja keskusteluketjun viestit lähetysajan tai yläpeukkujen määrän mukaan.
 * Ylläpitäjä voi lisätä ja poistaa keskustelualueita.
 * Salaisia keskustelualueita EI voi vielä luoda.
 
