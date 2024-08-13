@@ -28,11 +28,17 @@
 {% for thread in thrs %}
     <hr>
     <a href="/thread/{{ thread.id }}">{{ thread.title }}</a>
+
     {% if thread.likes == 1 or thread.likes == -1 %}
         <i>({{ thread.likes }} tykkäys)</i>
     {% else %}
         <i>({{ thread.likes }} tykkäystä)</i>
     {% endif %}
+
+    {% if thread.time_str %}
+        <span id="latest">viimeisin viesti {{ thread.time_str }}</span>
+    {% endif %}
+
     {% if thread.username == session.username or is_admin %}
         <br>
         <a href="/thread/delete/{{ thread.id }}">Poista</a>
