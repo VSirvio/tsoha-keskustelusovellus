@@ -8,6 +8,8 @@
     &nbsp;<a href="/thread/edit/{{ thread.id }}" style="font-size: smaller">Muokkaa</a>
 {% endif %}
 <br><br>
+<span id="latest">{{ first_msg.time_str }}</span>
+<br>
 <b>{{ first_msg.user }}:</b> {{ first_msg.content }}
 <br>
 <a href="/reply/{{ first_msg.id }}">Vastaa</a>
@@ -47,6 +49,9 @@
 </form>
 <hr>
 {% for message in first_msg.replies recursive %}
+    {{ "&nbsp;"|safe*(loop.depth * 4) }}
+    <span id="latest">{{ message.time_str }}</span>
+    <br>
     {{ "&nbsp;"|safe*(loop.depth * 4) }}
     <b>{{ message.user }}:</b> {{ message.content }}
     <br>

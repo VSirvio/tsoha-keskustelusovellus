@@ -17,6 +17,7 @@ def select_msg_tree(msg_id : int, order_by : str):
     cur_msg = Message(msg.username, msg_id, msg.content)
     cur_msg.likes = likes.get_total_likes(msg_id)
     cur_msg.liked = likes.voted_by_user(msg_id, user.id)
+    cur_msg.time_str = msg.time_str
 
     replies = messages.get_replies(msg_id, order_by)
     for reply in replies:

@@ -8,6 +8,7 @@ class Message:
         self.__content = content
         self.__likes = 0
         self.__liked = False
+        self.__time_str = ""
 
     @property
     def user(self) -> str:
@@ -43,3 +44,11 @@ class Message:
     @liked.setter
     def liked(self, liked : bool):
         self.__liked = liked
+
+    @property
+    def time_str(self) -> str:
+        return self.__time_str
+
+    @time_str.setter
+    def time_str(self, time_str : str):
+        self.__time_str = time_str

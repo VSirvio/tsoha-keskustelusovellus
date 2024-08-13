@@ -3,7 +3,8 @@ from db import db
 
 def get_msg(msg_id : int):
     sql = text(
-        "SELECT M.id, M.content, M.thread, M.uid, U.username "
+        "SELECT M.id, M.content, M.thread, M.uid, U.username,"
+        " TO_CHAR(M.sent, 'DD.MM.YYYY klo HH24:MI') AS time_str "
         "FROM messages M JOIN users U "
         "ON M.id = :msg_id AND U.id = M.uid"
     )
