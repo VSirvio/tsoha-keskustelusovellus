@@ -4,6 +4,7 @@ from flask import render_template, redirect, abort, request, session, url_for
 from werkzeug.security import check_password_hash, generate_password_hash
 from message_tree import Message
 from app import app
+import config
 import likes
 import messages
 import subforums
@@ -118,7 +119,7 @@ def subforum(subforum_id):
 
     order_by = request.args.get("order_by")
     if order_by not in ["newest", "oldest", "most_liked", "most_disliked"]:
-        order_by = "newest"
+        order_by = config.DEFAULT_ORDER
 
     cur_subforum = subforums.get_subforum(subforum_id)
     thrs = threads.get_thrs(subforum_id, order_by)
@@ -177,6 +178,9 @@ def thread(thr_id):
         return redirect(url_for("signin"))
 
     order_by = request.args.get("order_by")
+    if order_by not in ["newest", "oldest", "most_liked", "most_disliked"]:
+        order_by = config.DEFAULT_ORDER
+
     thr = threads.get_thr(thr_id)
     first_msg = select_msg_tree(thr.first_msg, order_by)
 
