@@ -38,10 +38,6 @@ def get_thr(thr_id : int):
     )
     return db.session.execute(sql, {"thr_id": thr_id}).fetchone()
 
-def get_subforum_id(thr_id : int):
-    sql = text("SELECT subforum FROM threads WHERE id = :thr_id")
-    return db.session.execute(sql, {"thr_id": thr_id}).fetchone().subforum
-
 def new_thr(uid : int, subforum_id : int, title : str, msg : str):
     sql = text(
         "INSERT INTO threads "

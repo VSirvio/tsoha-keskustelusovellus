@@ -323,7 +323,7 @@ def delete(msg_id):
     if msg.uid != cur_user.id and not users.is_admin(session["username"]):
         return redirect(f"/thread/{msg.thread}")
 
-    subforum_id = threads.get_subforum_id(msg.thread)
+    subforum_id = threads.get_thr(msg.thread).subforum
 
     messages.delete_msg(msg_id)
 
