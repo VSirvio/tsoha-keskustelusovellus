@@ -32,6 +32,9 @@
 
     {% if is_admin %}
         <br>
+        {% if subforum.secret %}
+            <a href="/subforum/edit/{{ subforum.id }}">Muokkaa</a>&nbsp;
+        {% endif %}
         <a href="/subforum/delete/{{ subforum.id }}">Poista</a>
     {% endif %}
 

@@ -6,6 +6,7 @@ from app import app
 import config
 import likes
 import messages
+import permissions
 import subforums
 import threads
 import users
@@ -150,6 +151,20 @@ def create_subforum():
     subforums.new_subforum(title, desc, is_secret)
 
     return redirect(url_for("forums"))
+
+@app.route("/subforum/edit/<int:subforum_id>")
+def edit_subforum(subforum_id):
+    if "username" not in session:
+        return redirect(url_for("signin"))
+
+    if not users.is_admin(session["username"]):
+        return redirect(url_for("forums"))
+
+    permitted = permissions.get_permitted_users(subforum_id)
+    blocked = permissions.get_blocked_users(subforum_id)
+
+    return render_template("edit_subforum.html", subforum_id=subforum_id,
+                           permitted_users=permitted, blocked_users=blocked)
 
 
 @app.route("/subforum/delete/<int:subforum_id>")
@@ -363,6 +378,45 @@ def delete(msg_id):
         return redirect(f"/subforum/{subforum_id}")
 
     return redirect(f"/thread/{msg.thread}")
+
+@app.route("/permission/add", methods=["POST"])
+def add_permission():
+    if "username" not in session:
+        return redirect(url_for("signin"))
+
+    if session["csrf_token"] != request.form["csrf_token"]:
+        abort(403)
+
+    if not users.is_admin(session["username"]):
+        return redirect(url_for("forums"))
+
+    uid = request.form["uid"]
+    subforum = request.form["subforum"]
+
+    if users.is_admin(uid) or not subforums.get_subforum(subforum).secret:
+        return redirect(url_for("forums"))
+
+    permissions.add_permission(uid, subforum)
+
+    return redirect(url_for("edit_subforum", subforum_id=subforum))
+
+@app.route("/permission/delete", methods=["POST"])
+def delete_permission():
+    if "username" not in session:
+        return redirect(url_for("signin"))
+
+    if session["csrf_token"] != request.form["csrf_token"]:
+        abort(403)
+
+    if not users.is_admin(session["username"]):
+        return redirect(url_for("forums"))
+
+    uid = request.form["uid"]
+    subforum = request.form["subforum"]
+
+    permissions.delete_permission(uid, subforum)
+
+    return redirect(url_for("edit_subforum", subforum_id=subforum))
 
 @app.route("/like/<int:msg_id>")
 def like(msg_id):

@@ -5,7 +5,7 @@ import config
 
 def get_subforums(cur_user : Row):
     sql = text(
-        "SELECT F.id, F.title, F.description,"
+        "SELECT F.id, F.title, F.description, F.secret,"
         " COUNT(DISTINCT T.id) AS threads,"
         " COUNT(M.id) AS messages,"
         " TO_CHAR(MAX(M.sent), :date_format) AS latest "
@@ -24,7 +24,9 @@ def get_subforums(cur_user : Row):
     return db.session.execute(sql, params).fetchall()
 
 def get_subforum(subforum_id : int):
-    sql = text("SELECT id, title, description FROM subforums WHERE id = :id")
+    sql = text(
+        "SELECT id, title, description, secret FROM subforums WHERE id = :id"
+    )
     return db.session.execute(sql, {"id": subforum_id}).fetchone()
 
 def is_permitted(subforum_id : int, user : Row):

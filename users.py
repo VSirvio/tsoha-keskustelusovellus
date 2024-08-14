@@ -7,9 +7,13 @@ def get_user(username : str):
     )
     return db.session.execute(sql, {"username": username}).fetchone()
 
-def is_admin(username : str):
-    sql = text("SELECT admin FROM users WHERE username = :username")
-    return db.session.execute(sql, {"username": username}).fetchone().admin
+def is_admin(user : str | int):
+    if isinstance(user, int):
+        sql = text("SELECT admin FROM users WHERE id = :user")
+    else:
+        sql = text("SELECT admin FROM users WHERE username = :user")
+
+    return db.session.execute(sql, {"user": user}).fetchone().admin
 
 def register(username : str, password : str):
     sql = text(

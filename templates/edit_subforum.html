@@ -1,0 +1,35 @@
+{% extends "layout.html" %}
+
+{% block previous %}/forums{% endblock %}
+
+{% block content %}
+    <title>Keskustelualueen asetukset</title>
+
+    <br>
+
+    <h4>Sallitut käyttäjät</h4>
+    {% for user in permitted_users %}
+        {{ user.username }}
+        <form action="/permission/delete" method="POST" style="display: inline">
+            <input type="hidden" name="uid" value="{{ user.id }}">
+            <input type="hidden" name="subforum" value="{{ subforum_id }}">
+            <input type="submit" value="Estä">
+            <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+        </form>
+        <br>
+    {% endfor %}
+
+    <br>
+
+    <h4>Estetyt käyttäjät</h4>
+    {% for user in blocked_users %}
+        {{ user.username }}
+        <form action="/permission/add" method="POST" style="display: inline">
+            <input type="hidden" name="uid" value="{{ user.id }}">
+            <input type="hidden" name="subforum" value="{{ subforum_id }}">
+            <input type="submit" value="Salli">
+            <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+        </form>
+        <br>
+    {% endfor %}
+{% endblock %}
