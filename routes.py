@@ -142,11 +142,12 @@ def create_subforum():
 
     title = request.form["title"]
     desc = request.form["description"]
+    is_secret = bool(request.form.get("secret"))
 
     if len(title) < 1 or len(title) > 30 or len(desc) < 1 or len(desc) > 100:
         return redirect(url_for("forums"))
 
-    subforums.new_subforum(title, desc)
+    subforums.new_subforum(title, desc, is_secret)
 
     return redirect(url_for("forums"))
 

@@ -41,11 +41,13 @@ def is_permitted(subforum_id : int, user : Row):
     params = {"uid": user.id, "subforum": subforum_id}
     return db.session.execute(sql, params).fetchone().is_permitted
 
-def new_subforum(title : str, desc : str):
+def new_subforum(title : str, desc : str, is_secret : bool):
     sql = text(
-        "INSERT INTO subforums (title, description) VALUES (:title, :desc)"
+        "INSERT INTO subforums (title, description, secret)"
+        " VALUES (:title, :desc, :is_secret)"
     )
-    db.session.execute(sql, {"title": title, "desc": desc})
+    params = {"title": title, "desc": desc, "is_secret": is_secret}
+    db.session.execute(sql, params)
     db.session.commit()
 
 def delete_subforum(subforum_id : int):
