@@ -71,14 +71,6 @@ def new_msg(orig_id : int, uid : int, thr_id : int, content : str):
 
     return msg.id
 
-def is_1st_msg_in_thr(msg_id : int):
-    sql = text(
-        "SELECT M.id = T.first_msg AS is_first FROM messages M "
-        "JOIN threads T ON T.id = M.thread "
-        "WHERE M.id = :msg_id"
-    )
-    return db.session.execute(sql, {"msg_id": msg_id}).fetchone().is_first
-
 def edit_msg(msg_id : int, content : str):
     sql = text("UPDATE messages SET content = :content WHERE id = :id")
     db.session.execute(sql, {"content": content, "id": msg_id})
