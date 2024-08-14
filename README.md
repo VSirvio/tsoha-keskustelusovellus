@@ -19,16 +19,7 @@ Sovelluksen ominaisuuksia:
 
 Tällä hetkellä toteutettu:
 
-* Käyttäjä voi kirjautua sisään ja ulos sekä luoda uuden tunnuksen.
-* Käyttäjä näkee sovelluksen etusivulla listan alueista sekä jokaisen alueen ketjujen ja viestien määrän ja viimeksi lähetetyn viestin ajankohdan.
-* Käyttäjä voi luoda alueelle uuden ketjun antamalla ketjun otsikon ja aloitusviestin sisällön.
-* Käyttäjä voi kirjoittaa ketjuun uuden viestin vastauksena olemassa olevaan viestiin.
-* Käyttäjä voi muokata luomansa ketjun otsikkoa sekä lähettämänsä viestin sisältöä. Käyttäjä voi myös poistaa ketjun tai viestin.
-* Käyttäjä voi etsiä kaikki viestit, jotka sisältävät annetut sanat.
-* Käyttäjä voi antaa ylä- tai alapeukun viestille. Käyttäjä voi myöhemmin muokata valintaansa.
-* Käyttäjä voi lajitella keskustelualueen ketjut ja keskusteluketjun viestit lähetysajan tai yläpeukkujen määrän mukaan.
-* Ylläpitäjä voi lisätä ja poistaa keskustelualueita.
-* Salaisia keskustelualueita EI voi vielä luoda.
+* Kaikki yllä mainitut ominaisuudet on nyt toteutettu.
 
 **Ohjeet sovelluksen ajamiseen paikallisesti:**
 
