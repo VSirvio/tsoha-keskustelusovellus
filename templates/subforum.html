@@ -38,10 +38,5 @@
     {% if thread.time_str %}
         <span class="timestamp">viimeisin viesti {{ thread.time_str }}</span>
     {% endif %}
-
-    {% if thread.username == session.username or is_admin %}
-        <br>
-        <a href="/thread/delete/{{ thread.id }}">Poista</a>
-    {% endif %}
 {% endfor %}
 {% endblock %}
