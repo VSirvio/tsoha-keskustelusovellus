@@ -1,83 +1,72 @@
 {% extends "layout.html" %}
-{% block previous %}/subforum/{{ thread.subforum }}{% endblock %}
-{% block content %}
-<title>{{ thread.title }} - Viestiketju</title>
-<br>
-<h3 style="display: inline">{{ thread.title }}</h3>
-{% if session.username == thread.username or is_admin %}
-    &nbsp;<a href="/thread/edit/{{ thread.id }}" style="font-size: smaller">Muokkaa</a>
-{% endif %}
-<br><br>
-<span id="latest">{{ first_msg.time_str }}</span>
-<br>
-<b>{{ first_msg.user }}:</b> {{ first_msg.content }}
-<br>
-<a href="/reply/{{ first_msg.id }}">Vastaa</a>
-{% if session.username == first_msg.user or is_admin %}
-    &nbsp;<a href="/edit/{{ first_msg.id }}">Muokkaa</a>
-    &nbsp;<a href="/delete/{{ first_msg.id }}">Poista</a>
-{% endif %}
-<br>
-<b>{{ first_msg.likes }}</b>
-{% if first_msg.likes == 1 or first_msg.likes == -1 %}
-    <b>tykkäys</b>
-{% else %}
-    <b>tykkäystä</b>
-{% endif %}
-{% if first_msg.liked %}
-    <a href="/unlike/{{ first_msg.id }}">Poista tykkäys</a>
-{% else %}
-    <a href="/like/{{ first_msg.id }}">+</a>
-    <a href="/dislike/{{ first_msg.id }}">-</a>
-{% endif %}
-<br><br>
-<form action="/thread/{{ thread.id }}" method="GET">
-    <select name="order_by" onchange="this.form.submit()">
-        <option value="newest" {% if order_by == "newest" %}selected{% endif %}>
-            Uusimmat
-        </option>
-        <option value="oldest" {% if order_by == "oldest" %}selected{% endif %}>
-            Vanhimmat
-        </option>
-        <option value="most_liked" {% if order_by == "most_liked" %}selected{% endif %}>
-            Tykätyimmät
-        </option>
-        <option value="most_disliked" {% if order_by == "most_disliked" %}selected{% endif %}>
-            Vihatuimmat
-        </option>
-    </select>
-</form>
-<hr>
-{% for message in first_msg.replies recursive %}
-    {{ "&nbsp;"|safe*(loop.depth * 4) }}
-    <span id="latest">{{ message.time_str }}</span>
-    <br>
-    {{ "&nbsp;"|safe*(loop.depth * 4) }}
-    <b>{{ message.user }}:</b> {{ message.content }}
-    <br>
-    {{ "&nbsp;"|safe*(loop.depth * 4) }}
+
+{% macro indent(level) %}
+    {{ "&nbsp;"|safe*(level * 4) }}
+{% endmacro %}
+
+{% macro msg_view(message, depth=0) %}
+    {{ indent(depth) }}<span id="latest">{{ message.time_str }}</span><br>
+
+    {{ indent(depth) }}<b>{{ message.user }}:</b> {{ message.content }}<br>
+
+    {{ indent(depth) }}
     <a href="/reply/{{ message.id }}">Vastaa</a>
     {% if session.username == message.user or is_admin %}
         &nbsp;<a href="/edit/{{ message.id }}">Muokkaa</a>
         &nbsp;<a href="/delete/{{ message.id }}">Poista</a>
     {% endif %}
     <br>
-    {{ "&nbsp;"|safe*(loop.depth * 4) }}
-    <b>{{ message.likes }}</b>
-    {% if message.likes == 1 or message.likes == -1 %}
-        <b>tykkäys</b>
-    {% else %}
-        <b>tykkäystä</b>
-    {% endif %}
+
+    {{ indent(depth) }}
+    <b>{{ message.likes }} tykkäys{% if message.likes not in [1, -1] %}tä{% endif %}</b>
     {% if message.liked %}
         <a href="/unlike/{{ message.id }}">Poista tykkäys</a>
     {% else %}
         <a href="/like/{{ message.id }}">+</a>
         <a href="/dislike/{{ message.id }}">-</a>
     {% endif %}
-    <hr>
-    {% if message.replies %}
-        {{ loop(message.replies) }}
+{% endmacro %}
+
+{% block previous %}/subforum/{{ thread.subforum }}{% endblock %}
+
+{% block content %}
+    <title>{{ thread.title }} - Viestiketju</title>
+
+    <br>
+    <h3 style="display: inline">{{ thread.title }}</h3>
+    {% if session.username == thread.username or is_admin %}
+        &nbsp;<a href="/thread/edit/{{ thread.id }}" style="font-size: smaller">Muokkaa</a>
     {% endif %}
-{% endfor %}
+    <br><br>
+
+    {{ msg_view(first_msg) }}<br><br>
+
+    <form action="/thread/{{ thread.id }}" method="GET">
+        <select name="order_by" onchange="this.form.submit()">
+            <option value="newest" {% if order_by == "newest" %}selected{% endif %}>
+                Uusimmat
+            </option>
+            <option value="oldest" {% if order_by == "oldest" %}selected{% endif %}>
+                Vanhimmat
+            </option>
+            <option value="most_liked" {% if order_by == "most_liked" %}selected{% endif %}>
+                Tykätyimmät
+            </option>
+            <option value="most_disliked" {% if order_by == "most_disliked" %}selected{% endif %}>
+                Vihatuimmat
+            </option>
+        </select>
+    </form>
+
+    <hr>
+
+    {% for message in first_msg.replies recursive %}
+        {{ msg_view(message, loop.depth) }}
+
+        <hr>
+
+        {% if message.replies %}
+            {{ loop(message.replies) }}
+        {% endif %}
+    {% endfor %}
 {% endblock %}
