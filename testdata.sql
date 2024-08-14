@@ -54,4 +54,16 @@ INSERT INTO messages (uid, thread, content, sent) VALUES (1, 3, 'Random viesti.'
 INSERT INTO message_tree_paths (ancestor, descendant, depth) VALUES (6, 6, 0);
 
 
+INSERT INTO subforums (title, description, secret) VALUES ('Salainen', 'Auki vain harvoille ja valituille', TRUE);
+
+
+INSERT INTO threads (uid, subforum, title, first_msg) VALUES (3, 3, 'Salaisuuksia', 7);
+
+INSERT INTO messages (uid, thread, content, sent) VALUES (3, 4, 'Vastaus perimmäiseen kysymykseen elämästä, maailmankaikkeudesta ja kaikesta on 42.', '2024-08-14 13:52:30.134895');
+INSERT INTO message_tree_paths (ancestor, descendant, depth) VALUES (7, 7, 0);
+
+
+INSERT INTO permissions (uid, subforum) VALUES (1, 3);
+
+
 COMMIT;

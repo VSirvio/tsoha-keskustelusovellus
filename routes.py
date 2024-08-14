@@ -92,14 +92,22 @@ def register():
 def forums():
     if "username" not in session:
         return redirect(url_for("signin"))
-    forum_list = subforums.get_subforums()
+
+    user = users.get_user(session["username"])
+    forum_list = subforums.get_subforums(user)
+
     return render_template("subforum_list.html", subforums=forum_list,
-                           is_admin=users.is_admin(session["username"]))
+                           is_admin=user.admin)
 
 @app.route("/subforum/<int:subforum_id>")
 def subforum(subforum_id):
     if "username" not in session:
         return redirect(url_for("signin"))
+
+    user = users.get_user(session["username"])
+
+    if not subforums.is_permitted(subforum_id, user):
+        return redirect(url_for("forums"))
 
     order_by = request.args.get("order_by")
     if order_by not in ["newest", "oldest", "most_liked", "most_disliked"]:
@@ -109,8 +117,7 @@ def subforum(subforum_id):
     thrs = threads.get_thrs(subforum_id, order_by)
 
     return render_template("subforum.html", subforum=cur_subforum, thrs=thrs,
-                           is_admin=users.is_admin(session["username"]),
-                           order_by=order_by)
+                           is_admin=user.admin, order_by=order_by)
 
 @app.route("/subforum/new")
 def new_subforum():
@@ -161,12 +168,16 @@ def thread(thr_id):
     if "username" not in session:
         return redirect(url_for("signin"))
 
+    thr = threads.get_thr(thr_id)
+    user = users.get_user(session["username"])
+
+    if not subforums.is_permitted(thr.subforum, user):
+        return redirect(url_for("forums"))
+
     order_by = request.args.get("order_by")
     if order_by not in ["newest", "oldest", "most_liked", "most_disliked"]:
         order_by = config.DEFAULT_ORDER
 
-    thr = threads.get_thr(thr_id)
-    user = users.get_user(session["username"])
     msgs = messages.get_tree(thr.first_msg, user.id, order_by)
     first_msg = next(msg for msg in msgs if msg.id == thr.first_msg)
 
@@ -178,6 +189,12 @@ def thread(thr_id):
 def new_thr(subforum_id):
     if "username" not in session:
         return redirect(url_for("signin"))
+
+    user = users.get_user(session["username"])
+
+    if not subforums.is_permitted(subforum_id, user):
+        return redirect(url_for("forums"))
+
     return render_template("new_thread.html", subforum_id=subforum_id)
 
 @app.route("/thread/create/<int:subforum_id>", methods=["POST"])
@@ -188,13 +205,17 @@ def create_thr(subforum_id):
     if session["csrf_token"] != request.form["csrf_token"]:
         abort(403)
 
+    user = users.get_user(session["username"])
+
+    if not subforums.is_permitted(subforum_id, user):
+        return redirect(url_for("forums"))
+
     title = request.form["title"]
     msg = request.form["message"]
 
     if len(title) < 1 or len(title) > 30 or len(msg) < 1 or len(msg) > 100:
         return redirect(url_for("new_thr", subforum_id=subforum_id))
 
-    user = users.get_user(session["username"])
     thr_id = threads.new_thr(user.id, subforum_id, title, msg)
 
     return redirect(f"/thread/{thr_id}")
@@ -254,8 +275,14 @@ def delete_thr(thr_id):
 def message(msg_id):
     if "username" not in session:
         return redirect(url_for("signin"))
-    thr_id = messages.get_msg(msg_id).thread
-    return render_template("new_message.html", msg_id=msg_id, thr_id=thr_id)
+
+    thr = threads.get_thr(messages.get_msg(msg_id).thread)
+    user = users.get_user(session["username"])
+
+    if not subforums.is_permitted(thr.subforum, user):
+        return redirect(url_for("forums"))
+
+    return render_template("new_message.html", msg_id=msg_id, thr_id=thr.id)
 
 @app.route("/send/<int:orig_id>", methods=["POST"])
 def send(orig_id):
@@ -265,16 +292,20 @@ def send(orig_id):
     if session["csrf_token"] != request.form["csrf_token"]:
         abort(403)
 
+    thr = threads.get_thr(messages.get_msg(orig_id).thread)
+    user = users.get_user(session["username"])
+
+    if not subforums.is_permitted(thr.subforum, user):
+        return redirect(url_for("forums"))
+
     content = request.form["content"]
 
     if len(content) < 1 or len(content) > 1000:
         return redirect(url_for("message"))
 
-    user = users.get_user(session["username"])
-    thr_id = messages.get_msg(orig_id).thread
-    messages.new_msg(orig_id, user.id, thr_id, content)
+    messages.new_msg(orig_id, user.id, thr.id, content)
 
-    return redirect(f"/thread/{thr_id}")
+    return redirect(f"/thread/{thr.id}")
 
 @app.route("/edit/<int:msg_id>")
 def edit(msg_id):
@@ -337,33 +368,45 @@ def like(msg_id):
     if "username" not in session:
         return redirect(url_for("signin"))
 
+    thr = threads.get_thr(messages.get_msg(msg_id).thread)
     user = users.get_user(session["username"])
+
+    if not subforums.is_permitted(thr.subforum, user):
+        return redirect(url_for("forums"))
 
     likes.like(user.id, msg_id)
 
-    return redirect(f"/thread/{messages.get_msg(msg_id).thread}")
+    return redirect(f"/thread/{thr.id}")
 
 @app.route("/dislike/<int:msg_id>")
 def dislike(msg_id):
     if "username" not in session:
         return redirect(url_for("signin"))
 
+    thr = threads.get_thr(messages.get_msg(msg_id).thread)
     user = users.get_user(session["username"])
+
+    if not subforums.is_permitted(thr.subforum, user):
+        return redirect(url_for("forums"))
 
     likes.dislike(user.id, msg_id)
 
-    return redirect(f"/thread/{messages.get_msg(msg_id).thread}")
+    return redirect(f"/thread/{thr.id}")
 
 @app.route("/unlike/<int:msg_id>")
 def unlike(msg_id):
     if "username" not in session:
         return redirect(url_for("signin"))
 
+    thr = threads.get_thr(messages.get_msg(msg_id).thread)
     user = users.get_user(session["username"])
+
+    if not subforums.is_permitted(thr.subforum, user):
+        return redirect(url_for("forums"))
 
     likes.unlike(user.id, msg_id)
 
-    return redirect(f"/thread/{messages.get_msg(msg_id).thread}")
+    return redirect(f"/thread/{thr.id}")
 
 @app.route("/search", methods=["POST"])
 def search():
@@ -378,6 +421,7 @@ def search():
     if len(search_terms) < 1 or len(search_terms) > 10:
         return redirect(url_for("forums"))
 
-    results = messages.search(search_terms)
+    user = users.get_user(session["username"])
+    results = messages.search(search_terms, user)
 
     return render_template("search_results.html", results=results)

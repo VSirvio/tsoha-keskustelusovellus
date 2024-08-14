@@ -1,4 +1,5 @@
 from sqlalchemy.sql import text
+from sqlalchemy.engine import Row
 from db import db
 import config
 
@@ -85,12 +86,21 @@ def delete_msg(msg_id : int):
     db.session.execute(sql, {"msg_id": msg_id})
     db.session.commit()
 
-def search(search_terms : list[str]):
+def search(search_terms : list[str], cur_user : Row):
     sql = text(
         "SELECT M.id, M.content, U.username, M.thread, T.title AS thr_title "
         "FROM messages M "
-        "JOIN users U ON U.id = M.uid "
-        "JOIN threads T ON T.id = M.thread "
-        "WHERE regexp_split_to_array(lower(content), '\\W+') @> :search_terms"
+        "LEFT JOIN users U ON U.id = M.uid "
+        "LEFT JOIN threads T ON T.id = M.thread "
+        "LEFT JOIN subforums F ON F.id = T.subforum "
+        "LEFT JOIN permissions P ON P.uid = :cur_user AND P.subforum = F.id "
+        "WHERE regexp_split_to_array(lower(content), '\\W+') @> :search_terms "
+        "GROUP BY M.id, U.id, T.id, F.id "
+        "HAVING (NOT F.secret) OR :is_admin OR COUNT(P.uid) > 0"
     )
-    return db.session.execute(sql, {"search_terms": search_terms}).fetchall()
+    params = {
+        "cur_user": cur_user.id,
+        "search_terms": search_terms,
+        "is_admin": cur_user.admin
+    }
+    return db.session.execute(sql, params).fetchall()
