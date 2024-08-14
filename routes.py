@@ -2,7 +2,6 @@ import re
 import secrets
 from flask import render_template, redirect, abort, request, session, url_for
 from werkzeug.security import check_password_hash, generate_password_hash
-from message_tree import Message
 from app import app
 import config
 import likes
@@ -10,21 +9,6 @@ import messages
 import subforums
 import threads
 import users
-
-def select_msg_tree(msg_id : int, order_by : str):
-    msg = messages.get_msg(msg_id)
-    user = users.get_user(session["username"])
-
-    cur_msg = Message(msg.username, msg_id, msg.content)
-    cur_msg.likes = likes.get_total_likes(msg_id)
-    cur_msg.liked = likes.voted_by_user(msg_id, user.id)
-    cur_msg.time_str = msg.time_str
-
-    replies = messages.get_replies(msg_id, order_by)
-    for reply in replies:
-        cur_msg.add_reply(select_msg_tree(reply.id, order_by))
-
-    return cur_msg
 
 @app.route("/")
 def signin():
@@ -182,11 +166,13 @@ def thread(thr_id):
         order_by = config.DEFAULT_ORDER
 
     thr = threads.get_thr(thr_id)
-    first_msg = select_msg_tree(thr.first_msg, order_by)
+    user = users.get_user(session["username"])
+    msgs = messages.get_tree(thr.first_msg, user.id, order_by)
+    first_msg = next(msg for msg in msgs if msg.id == thr.first_msg)
 
-    return render_template("thread.html", thread=thr, first_msg=first_msg,
-                           is_admin=users.is_admin(session["username"]),
-                           order_by=order_by)
+    return render_template("thread.html", thread=thr, msgs=msgs,
+                           first_msg=first_msg, order_by=order_by,
+                           is_admin=user.admin)
 
 @app.route("/thread/new/<int:subforum_id>")
 def new_thr(subforum_id):

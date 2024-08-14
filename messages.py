@@ -12,7 +12,7 @@ def get_msg(msg_id : int):
     params = {"date_format": config.DATE_FORMAT, "msg_id": msg_id}
     return db.session.execute(sql, params).fetchone()
 
-def get_replies(msg_id : int, order_by : str):
+def get_tree(root_msg : int, cur_user : int, order_by : str):
     order = "sent DESC"
     match order_by:
         case "oldest":
@@ -23,14 +23,26 @@ def get_replies(msg_id : int, order_by : str):
             order = "likes ASC"
 
     sql = text(
-        "SELECT descendant AS id, M.sent, COALESCE(SUM(L.value),0) AS likes "
-        "FROM message_tree_paths "
-        "LEFT JOIN messages M ON M.id = descendant "
+        "SELECT M.id, M.content, U.username AS user, M.sent,"
+        " TO_CHAR(M.sent, :date_format) AS time_str,"
+        " COALESCE(SUM(L.value),0) AS likes,"
+        " COUNT(I.value) > 0 AS liked,"
+        " ARRAY_AGG(D.descendant) AS replies "
+        "FROM message_tree_paths P "
+        "LEFT JOIN messages M ON M.id = P.descendant "
+        "LEFT JOIN users U ON U.id = M.uid "
         "LEFT JOIN likes L ON L.message = M.id "
-        "WHERE ancestor = :msg_id AND depth = 1 "
-        "GROUP BY descendant, M.sent ORDER BY " + order
+        "LEFT JOIN likes I ON I.message = M.id AND I.uid = :cur_user "
+        "LEFT JOIN message_tree_paths D ON D.ancestor = M.id AND D.depth = 1 "
+        "WHERE P.ancestor = :root_msg "
+        "GROUP BY M.id, U.username ORDER BY " + order
     )
-    return db.session.execute(sql, {"msg_id": msg_id}).fetchall()
+    params = {
+        "date_format": config.DATE_FORMAT,
+        "cur_user": cur_user,
+        "root_msg": root_msg
+    }
+    return db.session.execute(sql, params).fetchall()
 
 def new_msg(orig_id : int, uid : int, thr_id : int, content : str):
     sql = text(

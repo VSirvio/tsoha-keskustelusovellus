@@ -60,13 +60,13 @@
 
     <hr>
 
-    {% for message in first_msg.replies recursive %}
+    {% for message in (msgs|selectattr("id", "in", first_msg.replies)) recursive %}
         {{ msg_view(message, loop.depth) }}
 
         <hr>
 
         {% if message.replies %}
-            {{ loop(message.replies) }}
+            {{ loop(msgs|selectattr("id", "in", message.replies)) }}
         {% endif %}
     {% endfor %}
 {% endblock %}
