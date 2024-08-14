@@ -35,7 +35,7 @@
     <br>
     <h3 style="display: inline">{{ thread.title }}</h3>
     {% if session.username == thread.username or is_admin %}
-        &nbsp;<a href="/thread/edit/{{ thread.id }}" style="font-size: smaller">Muokkaa</a>
+        &nbsp;<a href="/thread/edit/{{ thread.id }}" class="title-action">Muokkaa</a>
     {% endif %}
     <br><br>
 
