@@ -36,7 +36,7 @@
     {% endif %}
 
     {% if thread.time_str %}
-        <span id="latest">viimeisin viesti {{ thread.time_str }}</span>
+        <span class="timestamp">viimeisin viesti {{ thread.time_str }}</span>
     {% endif %}
 
     {% if thread.username == session.username or is_admin %}

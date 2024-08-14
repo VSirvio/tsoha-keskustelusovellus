@@ -5,7 +5,7 @@
 {% endmacro %}
 
 {% macro msg_view(message, depth=0) %}
-    {{ indent(depth) }}<span id="latest">{{ message.time_str }}</span><br>
+    {{ indent(depth) }}<span class="timestamp">{{ message.time_str }}</span><br>
 
     {{ indent(depth) }}<b>{{ message.user }}:</b> {{ message.content }}<br>
 
