@@ -9,14 +9,14 @@ def get_thrs(subforum_id : int, order_by : str):
         case "oldest":
             order = "last_msg ASC"
         case "most_liked":
-            order = "likes DESC"
+            order = "first_msg_likes DESC"
         case "most_disliked":
-            order = "likes ASC"
+            order = "first_msg_likes ASC"
 
     sql = text(
         "SELECT T.id, T.uid, T.title, U.username, L.last_msg,"
         " TO_CHAR(L.last_msg, :date_format) AS time_str,"
-        " COALESCE(SUM(I.value),0) AS likes "
+        " COALESCE(SUM(I.value),0) AS first_msg_likes "
         "FROM threads T "
         "LEFT JOIN users U ON U.id = T.uid "
         "LEFT JOIN likes I ON I.message = T.first_msg "

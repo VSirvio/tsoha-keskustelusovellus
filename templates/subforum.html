@@ -29,10 +29,10 @@
     <hr>
     <a href="/thread/{{ thread.id }}">{{ thread.title }}</a>
 
-    {% if thread.likes == 1 or thread.likes == -1 %}
-        <i>({{ thread.likes }} tykkäys)</i>
+    {% if thread.first_msg_likes == 1 or thread.first_msg_likes == -1 %}
+        <i>({{ thread.first_msg_likes }} tykkäys)</i>
     {% else %}
-        <i>({{ thread.likes }} tykkäystä)</i>
+        <i>({{ thread.first_msg_likes }} tykkäystä)</i>
     {% endif %}
 
     {% if thread.time_str %}
