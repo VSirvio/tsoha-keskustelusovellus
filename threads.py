@@ -1,5 +1,6 @@
 from sqlalchemy.sql import text
 from db import db
+import config
 import messages
 
 def get_thrs(subforum_id : int, order_by : str):
@@ -14,7 +15,7 @@ def get_thrs(subforum_id : int, order_by : str):
 
     sql = text(
         "SELECT T.id, T.uid, T.title, U.username, L.last_msg,"
-        " TO_CHAR(L.last_msg, 'DD.MM.YYYY klo HH24:MI') AS time_str,"
+        " TO_CHAR(L.last_msg, :date_format) AS time_str,"
         " COALESCE(SUM(I.value),0) AS likes "
         "FROM threads T "
         "LEFT JOIN users U ON U.id = T.uid "
@@ -26,7 +27,8 @@ def get_thrs(subforum_id : int, order_by : str):
         "WHERE T.subforum = :subforum "
         "GROUP BY T.id, U.username, L.last_msg ORDER BY " + order
     )
-    return db.session.execute(sql, {"subforum": subforum_id}).fetchall()
+    params = {"date_format": config.DATE_FORMAT, "subforum": subforum_id}
+    return db.session.execute(sql, params).fetchall()
 
 def get_thr(thr_id : int):
     sql = text(

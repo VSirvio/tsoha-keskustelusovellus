@@ -1,14 +1,16 @@
 from sqlalchemy.sql import text
 from db import db
+import config
 
 def get_msg(msg_id : int):
     sql = text(
         "SELECT M.id, M.content, M.thread, M.uid, U.username,"
-        " TO_CHAR(M.sent, 'DD.MM.YYYY klo HH24:MI') AS time_str "
+        " TO_CHAR(M.sent, :date_format) AS time_str "
         "FROM messages M JOIN users U "
         "ON M.id = :msg_id AND U.id = M.uid"
     )
-    return db.session.execute(sql, {"msg_id": msg_id}).fetchone()
+    params = {"date_format": config.DATE_FORMAT, "msg_id": msg_id}
+    return db.session.execute(sql, params).fetchone()
 
 def get_replies(msg_id : int, order_by : str):
     order = "sent DESC"
