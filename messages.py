@@ -89,21 +89,18 @@ def delete_msg(msg_id : int):
     db.session.execute(sql, {"msg_id": msg_id})
     db.session.commit()
 
-def search(search_terms : list[str], cur_user : Row):
+def search(search_terms : list[str], cur_username : str):
     sql = text(
         "SELECT M.id, M.content, U.username, M.thread, T.title AS thr_title "
         "FROM messages M "
         "LEFT JOIN users U ON U.id = M.uid "
+        "LEFT JOIN users C ON C.username = :cur_username "
         "LEFT JOIN threads T ON T.id = M.thread "
         "LEFT JOIN subforums F ON F.id = T.subforum "
-        "LEFT JOIN permissions P ON P.uid = :cur_user AND P.subforum = F.id "
+        "LEFT JOIN permissions P ON P.uid = C.id AND P.subforum = F.id "
         "WHERE regexp_split_to_array(lower(content), '\\W+') @> :search_terms "
-        "GROUP BY M.id, U.id, T.id, F.id "
-        "HAVING (NOT F.secret) OR :is_admin OR COUNT(P.uid) > 0"
+        "GROUP BY M.id, U.id, C.id, T.id, F.id "
+        "HAVING (NOT F.secret) OR C.admin OR COUNT(P.uid) > 0"
     )
-    params = {
-        "cur_user": cur_user.id,
-        "search_terms": search_terms,
-        "is_admin": cur_user.admin
-    }
+    params = {"cur_username": cur_username, "search_terms": search_terms}
     return db.session.execute(sql, params).fetchall()

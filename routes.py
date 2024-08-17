@@ -476,7 +476,6 @@ def search():
     if len(search_terms) < 1 or len(search_terms) > 10:
         return redirect(url_for("forums"))
 
-    user = users.get_user(session["username"])
-    results = messages.search(search_terms, user)
+    results = messages.search(search_terms, session["username"])
 
     return render_template("search_results.html", results=results)
