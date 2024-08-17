@@ -94,20 +94,17 @@ def forums():
     if "username" not in session:
         return redirect(url_for("signin"))
 
-    user = users.get_user(session["username"])
-    forum_list = subforums.get_subforums(user)
+    forum_list = subforums.get_subforums(session["username"])
 
     return render_template("subforum_list.html", subforums=forum_list,
-                           is_admin=user.admin)
+                           is_admin=users.is_admin(session["username"]))
 
 @app.route("/subforum/<int:subforum_id>")
 def subforum(subforum_id):
     if "username" not in session:
         return redirect(url_for("signin"))
 
-    user = users.get_user(session["username"])
-
-    if not subforums.is_permitted(subforum_id, user):
+    if not subforums.is_permitted(subforum_id, session["username"]):
         return redirect(url_for("forums"))
 
     order_by = request.args.get("order_by")
@@ -118,7 +115,8 @@ def subforum(subforum_id):
     thrs = threads.get_thrs(subforum_id, order_by)
 
     return render_template("subforum.html", subforum=cur_subforum, thrs=thrs,
-                           is_admin=user.admin, order_by=order_by)
+                           is_admin=users.is_admin(session["username"]),
+                           order_by=order_by)
 
 @app.route("/subforum/new")
 def new_subforum():
@@ -185,15 +183,15 @@ def thread(thr_id):
         return redirect(url_for("signin"))
 
     thr = threads.get_thr(thr_id)
-    user = users.get_user(session["username"])
 
-    if not subforums.is_permitted(thr.subforum, user):
+    if not subforums.is_permitted(thr.subforum, session["username"]):
         return redirect(url_for("forums"))
 
     order_by = request.args.get("order_by")
     if order_by not in ["newest", "oldest", "most_liked", "most_disliked"]:
         order_by = config.DEFAULT_ORDER
 
+    user = users.get_user(session["username"])
     msgs = messages.get_tree(thr.first_msg, user.id, order_by)
     first_msg = next(msg for msg in msgs if msg.id == thr.first_msg)
 
@@ -206,9 +204,7 @@ def new_thr(subforum_id):
     if "username" not in session:
         return redirect(url_for("signin"))
 
-    user = users.get_user(session["username"])
-
-    if not subforums.is_permitted(subforum_id, user):
+    if not subforums.is_permitted(subforum_id, session["username"]):
         return redirect(url_for("forums"))
 
     return render_template("new_thread.html", subforum_id=subforum_id)
@@ -223,7 +219,7 @@ def create_thr(subforum_id):
 
     user = users.get_user(session["username"])
 
-    if not subforums.is_permitted(subforum_id, user):
+    if not subforums.is_permitted(subforum_id, session["username"]):
         return redirect(url_for("forums"))
 
     title = request.form["title"]
@@ -232,7 +228,8 @@ def create_thr(subforum_id):
     if len(title) < 1 or len(title) > 30 or len(msg) < 1 or len(msg) > 100:
         return redirect(url_for("new_thr", subforum_id=subforum_id))
 
-    thr_id = threads.new_thr(user.id, subforum_id, title, msg)
+    thr_id = threads.new_thr(users.get_user(session["username"]).id,
+                             subforum_id, title, msg)
 
     return redirect(f"/thread/{thr_id}")
 
@@ -293,9 +290,8 @@ def message(msg_id):
         return redirect(url_for("signin"))
 
     thr = threads.get_thr(messages.get_msg(msg_id).thread)
-    user = users.get_user(session["username"])
 
-    if not subforums.is_permitted(thr.subforum, user):
+    if not subforums.is_permitted(thr.subforum, session["username"]):
         return redirect(url_for("forums"))
 
     return render_template("new_message.html", msg_id=msg_id, thr_id=thr.id)
@@ -309,9 +305,8 @@ def send(orig_id):
         abort(403)
 
     thr = threads.get_thr(messages.get_msg(orig_id).thread)
-    user = users.get_user(session["username"])
 
-    if not subforums.is_permitted(thr.subforum, user):
+    if not subforums.is_permitted(thr.subforum, session["username"]):
         return redirect(url_for("forums"))
 
     content = request.form["content"]
@@ -319,6 +314,7 @@ def send(orig_id):
     if len(content) < 1 or len(content) > 1000:
         return redirect(url_for("message"))
 
+    user = users.get_user(session["username"])
     messages.new_msg(orig_id, user.id, thr.id, content)
 
     return redirect(f"/thread/{thr.id}")
@@ -424,12 +420,11 @@ def like(msg_id):
         return redirect(url_for("signin"))
 
     thr = threads.get_thr(messages.get_msg(msg_id).thread)
-    user = users.get_user(session["username"])
 
-    if not subforums.is_permitted(thr.subforum, user):
+    if not subforums.is_permitted(thr.subforum, session["username"]):
         return redirect(url_for("forums"))
 
-    likes.like(user.id, msg_id)
+    likes.like(users.get_user(session["username"]).id, msg_id)
 
     return redirect(f"/thread/{thr.id}")
 
@@ -439,12 +434,11 @@ def dislike(msg_id):
         return redirect(url_for("signin"))
 
     thr = threads.get_thr(messages.get_msg(msg_id).thread)
-    user = users.get_user(session["username"])
 
-    if not subforums.is_permitted(thr.subforum, user):
+    if not subforums.is_permitted(thr.subforum, session["username"]):
         return redirect(url_for("forums"))
 
-    likes.dislike(user.id, msg_id)
+    likes.dislike(users.get_user(session["username"]).id, msg_id)
 
     return redirect(f"/thread/{thr.id}")
 
@@ -454,12 +448,11 @@ def unlike(msg_id):
         return redirect(url_for("signin"))
 
     thr = threads.get_thr(messages.get_msg(msg_id).thread)
-    user = users.get_user(session["username"])
 
-    if not subforums.is_permitted(thr.subforum, user):
+    if not subforums.is_permitted(thr.subforum, session["username"]):
         return redirect(url_for("forums"))
 
-    likes.unlike(user.id, msg_id)
+    likes.unlike(users.get_user(session["username"]).id, msg_id)
 
     return redirect(f"/thread/{thr.id}")
 
