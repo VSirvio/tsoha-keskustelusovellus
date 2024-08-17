@@ -1,4 +1,3 @@
-import re
 import secrets
 from flask import render_template, redirect, abort, request, session, url_for
 from werkzeug.security import check_password_hash, generate_password_hash
