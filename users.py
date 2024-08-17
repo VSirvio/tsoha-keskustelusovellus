@@ -8,7 +8,7 @@ def get_user(username : str):
     return db.session.execute(sql, {"username": username}).fetchone()
 
 def is_admin(user : str | int):
-    if isinstance(user, int):
+    if isinstance(user, int) or user.isdigit():
         sql = text("SELECT admin FROM users WHERE id = :user")
     else:
         sql = text("SELECT admin FROM users WHERE username = :user")
