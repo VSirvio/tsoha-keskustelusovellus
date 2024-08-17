@@ -4,14 +4,8 @@ from db import db
 import config
 
 def get_msg(msg_id : int):
-    sql = text(
-        "SELECT M.id, M.content, M.thread, M.uid, U.username,"
-        " TO_CHAR(M.sent, :date_format) AS time_str "
-        "FROM messages M JOIN users U "
-        "ON M.id = :msg_id AND U.id = M.uid"
-    )
-    params = {"date_format": config.DATE_FORMAT, "msg_id": msg_id}
-    return db.session.execute(sql, params).fetchone()
+    sql = text("SELECT id, content, thread, uid FROM messages WHERE id = :id")
+    return db.session.execute(sql, {"id": msg_id}).fetchone()
 
 def get_tree(root_msg : int, cur_user : int, order_by : str):
     order = "sent DESC"
