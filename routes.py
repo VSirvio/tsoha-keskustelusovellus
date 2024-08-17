@@ -390,7 +390,7 @@ def add_permission():
     if not users.is_admin(session["username"]):
         return redirect(url_for("forums"))
 
-    uid = request.form["uid"]
+    uid = int(request.form["uid"])
     subforum_id = request.form["subforum"]
 
     if users.is_admin(uid) or not subforums.get_subforum(subforum_id).secret:
