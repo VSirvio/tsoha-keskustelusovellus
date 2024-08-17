@@ -1,5 +1,4 @@
 from sqlalchemy.sql import text
-from sqlalchemy.engine import Row
 from db import db
 import config
 
