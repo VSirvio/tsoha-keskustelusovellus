@@ -8,21 +8,20 @@ Käyttäjä: <b>{{ session.username }}</b>
 <br>
 <a href="/logout">Kirjaudu ulos</a>
 <br><br>
-<form action="/search" method="POST" onsubmit="return check_search_terms(this)">
+<form action="/search" method="POST" onsubmit="return check_search_term(this)">
 Haku:
-<input type="text" name="search_terms">
+<input type="text" name="search_term">
 <input type="submit" value="Hae">
 <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
 </form>
 <script>
-    function check_search_terms(form) {
-        var terms = form.search_terms.value.match(/[\p{Letter}\w]+/ug);
-        if (terms == null || terms.length < 1) {
-            alert("Pienin sallittu hakutermien määrä on 1");
+    function check_search_term(form) {
+        if (form.search_term.value.length < 1) {
+            alert("Lyhin sallittu hakutermin pituus on 1");
             return false;
         }
-        if (terms.length > 10) {
-            alert("Suurin sallittu hakutermien määrä on 10");
+        if (form.search_term.value.length > 100) {
+            alert("Pisin sallittu hakutermin pituus on 100");
             return false;
         }
         return true;

@@ -471,11 +471,11 @@ def search():
     if session["csrf_token"] != request.form["csrf_token"]:
         abort(403)
 
-    search_terms = re.findall(r"\w+", request.form["search_terms"].lower())
+    search_term = request.form["search_term"]
 
-    if len(search_terms) < 1 or len(search_terms) > 10:
+    if len(search_term) < 1 or len(search_term) > 100:
         return redirect(url_for("forums"))
 
-    results = messages.search(search_terms, session["username"])
+    results = messages.search(search_term, session["username"])
 
     return render_template("search_results.html", results=results)
