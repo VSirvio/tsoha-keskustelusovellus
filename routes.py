@@ -227,7 +227,7 @@ def create_thr(subforum_id):
     thr_id = threads.new_thr(users.get_user(session["username"]).id,
                              subforum_id, title, msg)
 
-    return redirect(f"/thread/{thr_id}")
+    return redirect(url_for("thread", thr_id=thr_id))
 
 @app.route("/thread/edit/<int:thr_id>")
 def edit_thr(thr_id):
@@ -313,7 +313,7 @@ def send(orig_id):
     user = users.get_user(session["username"])
     messages.new_msg(orig_id, user.id, thr.id, content)
 
-    return redirect(f"/thread/{thr.id}")
+    return redirect(url_for("thread", thr_id=thr.id))
 
 @app.route("/edit/<int:msg_id>")
 def edit(msg_id):
@@ -360,16 +360,16 @@ def delete(msg_id):
 
     cur_user = users.get_user(session["username"])
     if msg.uid != cur_user.id and not users.is_admin(session["username"]):
-        return redirect(f"/thread/{msg.thread}")
+        return redirect(url_for("thread", thr_id=msg.thread))
 
     subforum_id = threads.get_thr(msg.thread).subforum
 
     messages.delete_msg(msg_id)
 
     if not threads.get_thr(msg.thread):
-        return redirect(f"/subforum/{subforum_id}")
+        return redirect(url_for("subforum", subforum_id=subforum_id))
 
-    return redirect(f"/thread/{msg.thread}")
+    return redirect(url_for("thread", thr_id=msg.thread))
 
 @app.route("/permission/add", methods=["POST"])
 def add_permission():
@@ -422,7 +422,7 @@ def like(msg_id):
 
     likes.like(users.get_user(session["username"]).id, msg_id)
 
-    return redirect(f"/thread/{thr.id}")
+    return redirect(url_for("thread", thr_id=thr.id))
 
 @app.route("/dislike/<int:msg_id>")
 def dislike(msg_id):
@@ -436,7 +436,7 @@ def dislike(msg_id):
 
     likes.dislike(users.get_user(session["username"]).id, msg_id)
 
-    return redirect(f"/thread/{thr.id}")
+    return redirect(url_for("thread", thr_id=thr.id))
 
 @app.route("/unlike/<int:msg_id>")
 def unlike(msg_id):
@@ -450,7 +450,7 @@ def unlike(msg_id):
 
     likes.unlike(users.get_user(session["username"]).id, msg_id)
 
-    return redirect(f"/thread/{thr.id}")
+    return redirect(url_for("thread", thr_id=thr.id))
 
 @app.route("/search", methods=["POST"])
 def search():
