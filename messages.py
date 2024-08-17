@@ -45,16 +45,13 @@ def get_tree(root_msg : int, cur_user : int, order_by : str):
     }
     return db.session.execute(sql, params).fetchall()
 
-def new_msg(orig_id : int, uid : int, content : str):
+def new_msg(orig_id : int, uid : int, thr_id : int, content : str):
     sql = text(
         "INSERT INTO messages "
-        "(uid, thread, content) "
-        "SELECT :uid, M.thread, :content"
-        " FROM messages M"
-        " WHERE M.id = :orig_id "
+        "(uid, thread, content) VALUES (:uid, :thr, :content) "
         "RETURNING id"
     )
-    params = {"uid": uid, "orig_id": orig_id, "content": content}
+    params = {"uid": uid, "thr": thr_id, "content": content}
     msg = db.session.execute(sql, params).fetchone()
     db.session.commit()
 
