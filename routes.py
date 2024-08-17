@@ -163,7 +163,6 @@ def edit_subforum(subforum_id):
     return render_template("edit_subforum.html", subforum_id=subforum_id,
                            permitted_users=permitted, blocked_users=blocked)
 
-
 @app.route("/subforum/delete/<int:subforum_id>")
 def delete_subforum(subforum_id):
     if "username" not in session:
