@@ -16,8 +16,7 @@ def get_blocked_users(subforum_id : int):
         "SELECT U.id, U.username "
         "FROM users U "
         "LEFT JOIN permissions P ON P.uid = U.id AND P.subforum = :subforum "
-        "WHERE NOT U.admin "
-        "GROUP BY U.id HAVING COUNT(P.uid) = 0 "
+        "GROUP BY U.id HAVING COUNT(P.uid) = 0 AND NOT U.admin "
         "ORDER BY U.username"
     )
     return db.session.execute(sql, {"subforum": subforum_id}).fetchall()
