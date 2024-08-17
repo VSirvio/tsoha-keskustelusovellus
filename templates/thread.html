@@ -13,7 +13,7 @@
     <a href="/reply/{{ message.id }}">Vastaa</a>
     {% if session.username == message.user or is_admin %}
         &nbsp;<a href="/edit/{{ message.id }}">Muokkaa</a>
-        &nbsp;<a href="/delete/{{ message.id }}">Poista</a>
+        &nbsp;<a href="/delete/{{ message.id }}" onclick="return confirm('Poista viesti?')">Poista</a>
     {% endif %}
     <br>
 

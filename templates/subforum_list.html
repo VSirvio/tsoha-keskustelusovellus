@@ -35,7 +35,7 @@
         {% if subforum.secret %}
             <a href="/subforum/edit/{{ subforum.id }}">Muokkaa</a>&nbsp;
         {% endif %}
-        <a href="/subforum/delete/{{ subforum.id }}">Poista</a>
+        <a href="/subforum/delete/{{ subforum.id }}" onclick="return confirm('Poista keskustelualue?')">Poista</a>
     {% endif %}
 
     <hr>

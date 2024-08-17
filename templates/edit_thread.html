@@ -11,7 +11,7 @@ Otsikko:
 <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
 </form>
 <br>
-<a href="/thread/delete/{{ thr.id }}">Poista ketju</a>
+<a href="/thread/delete/{{ thr.id }}" onclick="return confirm('Poista ketju?')">Poista ketju</a>
 <script>
     function check(form) {
         if (form.title.value.length < 1) {
