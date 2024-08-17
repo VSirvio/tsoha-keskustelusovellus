@@ -1,17 +1,25 @@
 <title>Rekisteröidy - Keskustelusovellus</title>
+
 {% if error %}
     <div style="color: red">{{ error }}</div>
 {% endif %}
+
 <form action="/register" method="POST" onsubmit="return check(this)">
-<p>Tunnus:<br>
-<input type="text" name="username" autofocus></p>
-<p>Salasana:<br>
-<input type="password" name="password"></p>
-<p>Salasana uudelleen:<br>
-<input type="password" name="password2"></p>
-<input type="submit" value="Rekisteröidy">
+    <p>
+    Tunnus:<br>
+    <input type="text" name="username" autofocus>
+    <p>
+    Salasana:<br>
+    <input type="password" name="password">
+    <p>
+    Salasana uudelleen:<br>
+    <input type="password" name="password2">
+    <p>
+    <input type="submit" value="Rekisteröidy">
 </form>
+
 <a href="/">← Takaisin</a>
+
 <script>
     function check(form) {
         if (form.username.value.length < 5) {

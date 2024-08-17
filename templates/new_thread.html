@@ -1,38 +1,38 @@
 {% extends "layout.html" %}
+
 {% block previous %}/subforum/{{ subforum_id }}{% endblock %}
+
 {% block content %}
-<title>Luo uusi keskusteluketju</title>
-<br><br>
-<form action="/thread/create/{{ subforum_id }}" method="POST"
-      onsubmit="return check(this)">
-Otsikko:
-<input type="text" name="title" autofocus>
-<br>
-Aloitusviesti:
-<input type="text" name="message">
-<br>
-<input type="submit" value="Luo ketju">
-<input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-</form>
-<script>
-    function check(form) {
-        if (form.title.value.length < 1) {
-            alert("Otsikon pienin sallittu merkkimäärä on 1");
-            return false;
+    <title>Luo uusi viestiketju</title>
+
+    <br><br>
+
+    <form action="/thread/create/{{ subforum_id }}" method="POST" onsubmit="return check(this)">
+        Otsikko: <input type="text" name="title" autofocus><br>
+        Aloitusviesti: <input type="text" name="message"><br>
+        <input type="submit" value="Luo ketju">
+        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+    </form>
+
+    <script>
+        function check(form) {
+            if (form.title.value.length < 1) {
+                alert("Otsikon pienin sallittu merkkimäärä on 1");
+                return false;
+            }
+            if (form.title.value.length > 30) {
+                alert("Otsikon suurin sallittu merkkimäärä on 30");
+                return false;
+            }
+            if (form.message.value.length < 1) {
+                alert("Viestin pienin sallittu merkkimäärä on 1");
+                return false;
+            }
+            if (form.message.value.length > 100) {
+                alert("Viestin suurin sallittu merkkimäärä on 100");
+                return false;
+            }
+            return true;
         }
-        if (form.title.value.length > 30) {
-            alert("Otsikon suurin sallittu merkkimäärä on 30");
-            return false;
-        }
-        if (form.message.value.length < 1) {
-            alert("Viestin pienin sallittu merkkimäärä on 1");
-            return false;
-        }
-        if (form.message.value.length > 100) {
-            alert("Viestin suurin sallittu merkkimäärä on 100");
-            return false;
-        }
-        return true;
-    }
-</script>
+    </script>
 {% endblock %}

@@ -1,29 +1,32 @@
 <title>Kirjaudu sisään - Keskustelusovellus</title>
-{% if session.username %}
-    <meta http-equiv="Refresh" content="0; url='/forums'">
-{% else %}
-    {% if error %}
-        <div style="color: red">{{ error }}</div>
-    {% endif %}
-    <form action="/login" method="POST" onsubmit="return check(this)">
-    <p>Tunnus:<br>
-    <input type="text" name="username" autofocus></p>
-    <p>Salasana:<br>
-    <input type="password" name="password"></p>
-    <input type="submit" value="Kirjaudu">
-    </form>
-    <a href="/registration">Rekisteröidy</a>
-    <script>
-        function check(form) {
-            if (form.username.value.length > 30) {
-                alert("Pisin sallittu tunnuksen pituus on 30 merkkiä");
-                return false;
-            }
-            if (form.password.value.length > 30) {
-                alert("Pisin sallittu salasanan pituus on 30 merkkiä");
-                return false;
-            }
-            return true;
-        }
-    </script>
+
+{% if error %}
+    <div style="color: red">{{ error }}</div>
 {% endif %}
+
+<form action="/login" method="POST" onsubmit="return check(this)">
+    <p>
+    Tunnus:<br>
+    <input type="text" name="username" autofocus>
+    <p>
+    Salasana:<br>
+    <input type="password" name="password">
+    <p></p>
+    <input type="submit" value="Kirjaudu">
+</form>
+
+<a href="/registration">Rekisteröidy</a>
+
+<script>
+    function check(form) {
+        if (form.username.value.length > 30) {
+            alert("Pisin sallittu tunnuksen pituus on 30 merkkiä");
+            return false;
+        }
+        if (form.password.value.length > 30) {
+            alert("Pisin sallittu salasanan pituus on 30 merkkiä");
+            return false;
+        }
+        return true;
+    }
+</script>

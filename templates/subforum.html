@@ -1,42 +1,48 @@
 {% extends "layout.html" %}
+
 {% block previous %}/{% endblock %}
+
 {% block content %}
-<title>{{ subforum.title }} - Keskustelualue</title>
-<br>
-<h3 style="display: inline">{{ subforum.title }}</h3>
-&nbsp;<a href="/thread/new/{{ subforum.id }}" class="title-action">Luo uusi ketju</a>
-<br>
-<i>{{ subforum.description }}</i>
-<br>
-<br>
-<form action="/subforum/{{ subforum.id }}" method="GET">
-    <select name="order_by" onchange="this.form.submit()">
-        <option value="newest" {% if order_by == "newest" %}selected{% endif %}>
-            Uusimmat
-        </option>
-        <option value="oldest" {% if order_by == "oldest" %}selected{% endif %}>
-            Vanhimmat
-        </option>
-        <option value="most_liked" {% if order_by == "most_liked" %}selected{% endif %}>
-            Tykätyimmät
-        </option>
-        <option value="most_disliked" {% if order_by == "most_disliked" %}selected{% endif %}>
-            Vihatuimmat
-        </option>
-    </select>
-</form>
-{% for thread in thrs %}
-    <hr>
-    <a href="/thread/{{ thread.id }}">{{ thread.title }}</a>
+    <title>{{ subforum.title }} - Keskustelualue</title>
 
-    {% if thread.first_msg_likes == 1 or thread.first_msg_likes == -1 %}
-        <i>({{ thread.first_msg_likes }} tykkäys)</i>
-    {% else %}
-        <i>({{ thread.first_msg_likes }} tykkäystä)</i>
-    {% endif %}
+    <br>
 
-    {% if thread.time_str %}
-        <span class="timestamp">viimeisin viesti {{ thread.time_str }}</span>
-    {% endif %}
-{% endfor %}
+    <h3 style="display: inline">{{ subforum.title }}</h3>
+    &nbsp;<a href="/thread/new/{{ subforum.id }}" class="title-action">Luo uusi ketju</a>
+    <br>
+
+    <i>{{ subforum.description }}</i><br><br>
+
+    <form action="/subforum/{{ subforum.id }}" method="GET">
+        <select name="order_by" onchange="this.form.submit()">
+            <option value="newest" {% if order_by == "newest" %}selected{% endif %}>
+                Uusimmat
+            </option>
+            <option value="oldest" {% if order_by == "oldest" %}selected{% endif %}>
+                Vanhimmat
+            </option>
+            <option value="most_liked" {% if order_by == "most_liked" %}selected{% endif %}>
+                Tykätyimmät
+            </option>
+            <option value="most_disliked" {% if order_by == "most_disliked" %}selected{% endif %}>
+                Vihatuimmat
+            </option>
+        </select>
+    </form>
+
+    {% for thread in thrs %}
+        <hr>
+
+        <a href="/thread/{{ thread.id }}">{{ thread.title }}</a>
+
+        {% if thread.first_msg_likes == 1 or thread.first_msg_likes == -1 %}
+            <i>({{ thread.first_msg_likes }} tykkäys)</i>
+        {% else %}
+            <i>({{ thread.first_msg_likes }} tykkäystä)</i>
+        {% endif %}
+
+        {% if thread.time_str %}
+            <span class="timestamp">viimeisin viesti {{ thread.time_str }}</span>
+        {% endif %}
+    {% endfor %}
 {% endblock %}

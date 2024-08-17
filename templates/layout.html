@@ -1,19 +1,22 @@
 <!doctype html>
 <link rel="stylesheet" href="{{ url_for("static", filename="style.css") }}">
+
 {% block back %}
-<a href="{% block previous %}{% endblock %}">← Takaisin</a>
-<br><br>
+    <a href="{% block previous %}{% endblock %}">← Takaisin</a><br><br>
 {% endblock %}
-Käyttäjä: <b>{{ session.username }}</b>
-<br>
+
+Käyttäjä: <b>{{ session.username }}</b><br>
 <a href="/logout">Kirjaudu ulos</a>
+
 <br><br>
+
 <form action="/search" method="POST" onsubmit="return check_search_term(this)">
-Haku:
-<input type="text" name="search_term">
-<input type="submit" value="Hae">
-<input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+    Haku:
+    <input type="text" name="search_term">
+    <input type="submit" value="Hae">
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
 </form>
+
 <script>
     function check_search_term(form) {
         if (form.search_term.value.length < 1) {
@@ -27,4 +30,5 @@ Haku:
         return true;
     }
 </script>
+
 {% block content %}{% endblock %}

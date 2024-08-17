@@ -1,41 +1,39 @@
 {% extends "layout.html" %}
+
 {% block previous %}/forums{% endblock %}
+
 {% block content %}
-<title>Luo uusi keskustelualue</title>
-<br><br>
-<form action="/subforum/create" method="POST"
-      onsubmit="return check(this)">
-Otsikko:
-<input type="text" name="title" autofocus>
-<br>
-Kuvaus:
-<input type="text" name="description">
-<br>
-Salainen:
-<input type="checkbox" name="secret">
-<br>
-<input type="submit" value="Luo alue">
-<input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-</form>
-<script>
-    function check(form) {
-        if (form.title.value.length < 1) {
-            alert("Otsikon pienin sallittu merkkimäärä on 1");
-            return false;
+    <title>Luo uusi keskustelualue</title>
+
+    <br><br>
+
+    <form action="/subforum/create" method="POST" onsubmit="return check(this)">
+        Otsikko: <input type="text" name="title" autofocus><br>
+        Kuvaus: <input type="text" name="description"><br>
+        Salainen: <input type="checkbox" name="secret"><br>
+        <input type="submit" value="Luo alue">
+        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+    </form>
+
+    <script>
+        function check(form) {
+            if (form.title.value.length < 1) {
+                alert("Otsikon pienin sallittu merkkimäärä on 1");
+                return false;
+            }
+            if (form.title.value.length > 30) {
+                alert("Otsikon suurin sallittu merkkimäärä on 30");
+                return false;
+            }
+            if (form.description.value.length < 1) {
+                alert("Kuvauksen pienin sallittu merkkimäärä on 1");
+                return false;
+            }
+            if (form.description.value.length > 100) {
+                alert("Kuvauksen suurin sallittu merkkimäärä on 100");
+                return false;
+            }
+            return true;
         }
-        if (form.title.value.length > 30) {
-            alert("Otsikon suurin sallittu merkkimäärä on 30");
-            return false;
-        }
-        if (form.description.value.length < 1) {
-            alert("Kuvauksen pienin sallittu merkkimäärä on 1");
-            return false;
-        }
-        if (form.description.value.length > 100) {
-            alert("Kuvauksen suurin sallittu merkkimäärä on 100");
-            return false;
-        }
-        return true;
-    }
-</script>
+    </script>
 {% endblock %}

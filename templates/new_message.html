@@ -1,26 +1,29 @@
 {% extends "layout.html" %}
+
 {% block previous %}/thread/{{ thr_id }}{% endblock %}
+
 {% block content %}
-<title>Kirjoita uusi viesti</title>
-<br><br>
-<form action="/send/{{ msg_id }}" method="POST" onsubmit="return check(this)">
-Uusi viesti:
-<input type="text" name="content" autofocus>
-<br>
-<input type="submit" value="Lähetä">
-<input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-</form>
-<script>
-    function check(form) {
-        if (form.content.value.length < 1) {
-            alert("Pienin sallittu merkkimäärä on 1");
-            return false;
+    <title>Kirjoita uusi viesti</title>
+
+    <br><br>
+
+    <form action="/send/{{ msg_id }}" method="POST" onsubmit="return check(this)">
+        Uusi viesti: <input type="text" name="content" autofocus><br>
+        <input type="submit" value="Lähetä">
+        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+    </form>
+
+    <script>
+        function check(form) {
+            if (form.content.value.length < 1) {
+                alert("Pienin sallittu merkkimäärä on 1");
+                return false;
+            }
+            if (form.content.value.length > 100) {
+                alert("Suurin sallittu merkkimäärä on 100");
+                return false;
+            }
+            return true;
         }
-        if (form.content.value.length > 100) {
-            alert("Suurin sallittu merkkimäärä on 100");
-            return false;
-        }
-        return true;
-    }
-</script>
+    </script>
 {% endblock %}

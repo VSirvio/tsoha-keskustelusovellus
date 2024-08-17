@@ -1,43 +1,52 @@
 {% extends "layout.html" %}
+
 {% block back %}{% endblock %}
+
 {% block content %}
-<title>Keskustelualueet</title>
-<br>
-<h3 style="display: inline">Keskustelualueet</h3>
-{% if is_admin %}
-    &nbsp;<a href="/subforum/new" class="title-action">Luo uusi alue</a>
-{% endif %}
-<br><br>
-{% for subforum in subforums %}
-    <a href="/subforum/{{ subforum.id }}">{{ subforum.title }}</a>
-
-    {% if subforum.threads == 1 %}
-        (1 ketju,
-    {% else %}
-        ({{ subforum.threads }} ketjua,
-    {% endif %}
-
-    {% if subforum.messages == 1 %}
-        1 viesti)
-    {% else %}
-        {{ subforum.messages }} viestiä)
-    {% endif %}
-
-    {% if subforum.latest %}
-        <span class="timestamp">viimeisin viesti {{ subforum.latest }}</span>
-    {% endif %}
+    <title>Keskustelualueet</title>
 
     <br>
-    <i>{{ subforum.description }}</i>
 
+    <h3 style="display: inline">Keskustelualueet</h3>
     {% if is_admin %}
-        <br>
-        {% if subforum.secret %}
-            <a href="/subforum/edit/{{ subforum.id }}">Muokkaa</a>&nbsp;
-        {% endif %}
-        <a href="/subforum/delete/{{ subforum.id }}" onclick="return confirm('Poista keskustelualue?')">Poista</a>
+        &nbsp;<a href="/subforum/new" class="title-action">Luo uusi alue</a>
     {% endif %}
 
-    <hr>
-{% endfor %}
+    <br><br>
+
+    {% for subforum in subforums %}
+        <a href="/subforum/{{ subforum.id }}">{{ subforum.title }}</a>
+
+        {% if subforum.threads == 1 %}
+            (1 ketju,
+        {% else %}
+            ({{ subforum.threads }} ketjua,
+        {% endif %}
+
+        {% if subforum.messages == 1 %}
+            1 viesti)
+        {% else %}
+            {{ subforum.messages }} viestiä)
+        {% endif %}
+
+        {% if subforum.latest %}
+            <span class="timestamp">viimeisin viesti {{ subforum.latest }}</span>
+        {% endif %}
+
+        <br>
+
+        <i>{{ subforum.description }}</i>
+
+        {% if is_admin %}
+            <br>
+
+            {% if subforum.secret %}
+                <a href="/subforum/edit/{{ subforum.id }}">Muokkaa</a>&nbsp;
+            {% endif %}
+
+            <a href="/subforum/delete/{{ subforum.id }}" onclick="return confirm('Poista keskustelualue?')">Poista</a>
+        {% endif %}
+
+        <hr>
+    {% endfor %}
 {% endblock %}
