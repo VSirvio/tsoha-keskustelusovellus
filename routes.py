@@ -215,8 +215,6 @@ def create_thr(subforum_id):
     if session["csrf_token"] != request.form["csrf_token"]:
         abort(403)
 
-    user = users.get_user(session["username"])
-
     if not subforums.is_permitted(subforum_id, session["username"]):
         return redirect(url_for("forums"))
 
