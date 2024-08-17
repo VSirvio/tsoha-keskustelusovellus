@@ -319,7 +319,7 @@ def send(orig_id):
     if len(content) < 1 or len(content) > 1000:
         return redirect(url_for("message"))
 
-    messages.new_msg(orig_id, user.id, thr.id, content)
+    messages.new_msg(orig_id, user.id, content)
 
     return redirect(f"/thread/{thr.id}")
 
