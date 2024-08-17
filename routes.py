@@ -391,14 +391,14 @@ def add_permission():
         return redirect(url_for("forums"))
 
     uid = request.form["uid"]
-    subforum = request.form["subforum"]
+    subforum_id = request.form["subforum"]
 
-    if users.is_admin(uid) or not subforums.get_subforum(subforum).secret:
+    if users.is_admin(uid) or not subforums.get_subforum(subforum_id).secret:
         return redirect(url_for("forums"))
 
-    permissions.add_permission(uid, subforum)
+    permissions.add_permission(uid, subforum_id)
 
-    return redirect(url_for("edit_subforum", subforum_id=subforum))
+    return redirect(url_for("edit_subforum", subforum_id=subforum_id))
 
 @app.route("/permission/delete", methods=["POST"])
 def delete_permission():
@@ -412,11 +412,11 @@ def delete_permission():
         return redirect(url_for("forums"))
 
     uid = request.form["uid"]
-    subforum = request.form["subforum"]
+    subforum_id = request.form["subforum"]
 
-    permissions.delete_permission(uid, subforum)
+    permissions.delete_permission(uid, subforum_id)
 
-    return redirect(url_for("edit_subforum", subforum_id=subforum))
+    return redirect(url_for("edit_subforum", subforum_id=subforum_id))
 
 @app.route("/like/<int:msg_id>")
 def like(msg_id):
