@@ -307,7 +307,7 @@ def send(orig_id):
 
     content = request.form["content"]
 
-    if len(content) < 1 or len(content) > 1000:
+    if len(content) < 1 or len(content) > 100:
         return redirect(url_for("message", msg_id=orig_id))
 
     user = users.get_user(session["username"])
