@@ -34,12 +34,12 @@ INSERT INTO message_tree_paths (ancestor, descendant, depth) VALUES (2, 3, 1);
 INSERT INTO likes (uid, message, value) VALUES (1, 3, -1);
 INSERT INTO likes (uid, message, value) VALUES (2, 3, 1);
 
-INSERT INTO messages (uid, thread, content, sent) VALUES (1, 1, 'Vielä yksi viesti.', '2024-08-05 10:00:04.000128');
+INSERT INTO messages (uid, thread, content, sent) VALUES (1, 1, 'Tämä on viesti', '2024-08-05 10:00:04.000128');
 INSERT INTO message_tree_paths (ancestor, descendant, depth) VALUES (4, 4, 0);
 INSERT INTO message_tree_paths (ancestor, descendant, depth) VALUES (1, 4, 1);
 
 
-INSERT INTO threads (uid, subforum, title, first_msg) VALUES (1, 1, 'Joku toinen keskustelu', 5);
+INSERT INTO threads (uid, subforum, title, first_msg) VALUES (1, 1, 'Hauki on kala', 5);
 
 INSERT INTO messages (uid, thread, content, sent) VALUES (1, 2, 'Pöö', '2024-08-06 15:55:41.034501');
 INSERT INTO message_tree_paths (ancestor, descendant, depth) VALUES (5, 5, 0);
@@ -63,7 +63,7 @@ INSERT INTO messages (uid, thread, content, sent) VALUES (3, 4, 'Vastaus perimm�
 INSERT INTO message_tree_paths (ancestor, descendant, depth) VALUES (7, 7, 0);
 
 
-INSERT INTO permissions (uid, subforum) VALUES (1, 3);
+INSERT INTO permissions (uid, subforum) VALUES (2, 3);
 
 
 COMMIT;
