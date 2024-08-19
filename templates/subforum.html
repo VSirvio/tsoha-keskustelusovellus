@@ -46,5 +46,7 @@
         {% if thread.time_str %}
             <span class="timestamp">viimeisin viesti {{ thread.time_str }}</span>
         {% endif %}
+    {% else %}
+        Keskustelualueella ei ole vielä yhtäkään viestiä.
     {% endfor %}
 {% endblock %}

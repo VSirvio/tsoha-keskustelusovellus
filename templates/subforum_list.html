@@ -51,5 +51,11 @@
         {% endif %}
 
         <hr>
+    {% else %}
+        {% if is_admin %}
+            Yhtäkään keskustelualuetta ei ole vielä luotu.
+        {% else %}
+            Ylläpitäjä ei ole luonut vielä yhtäkään keskustelualuetta.
+        {% endif %}
     {% endfor %}
 {% endblock %}

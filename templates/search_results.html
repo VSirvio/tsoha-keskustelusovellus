@@ -15,5 +15,7 @@
             {{ result.content }}
             (<i>ketjussa {{ result.thr_title }}</i>)
         </a>
+    {% else %}
+        Ei tuloksia
     {% endfor %}
 {% endblock %}

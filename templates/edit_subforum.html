@@ -17,6 +17,8 @@
             <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
         </form>
         <br>
+    {% else %}
+        Ei sallittuja käyttäjiä
     {% endfor %}
 
     <br>
@@ -31,5 +33,7 @@
             <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
         </form>
         <br>
+    {% else %}
+        Ei estettyjä käyttäjiä
     {% endfor %}
 {% endblock %}
