@@ -6,7 +6,10 @@
 {% endblock %}
 
 Käyttäjä: <b>{{ session.username }}</b><br>
-<a href="/logout">Kirjaudu ulos</a>
+<form action="/logout" method="POST" class="link">
+    <input type="submit" value="Kirjaudu ulos">
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+</form>
 
 <br><br>
 

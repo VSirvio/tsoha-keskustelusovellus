@@ -44,7 +44,10 @@
                 <a href="/subforum/edit/{{ subforum.id }}">Muokkaa</a>&nbsp;
             {% endif %}
 
-            <a href="/subforum/delete/{{ subforum.id }}" onclick="return confirm('Poista keskustelualue?')">Poista</a>
+            <form action="/subforum/delete/{{ subforum.id }}" method="POST" class="link">
+                <input type="submit" value="Poista" onclick="return confirm('Poista keskustelualue?')">
+                <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+            </form>
         {% endif %}
 
         <hr>

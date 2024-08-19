@@ -43,9 +43,13 @@ def login():
 
     return redirect(url_for("forums"))
 
-@app.route("/logout")
+@app.route("/logout", methods=["POST"])
 def logout():
+    if session["csrf_token"] != request.form["csrf_token"]:
+        abort(403)
+
     del session["username"]
+
     return redirect(url_for("signin"))
 
 @app.route("/registration")
@@ -163,10 +167,13 @@ def edit_subforum(subforum_id):
     return render_template("edit_subforum.html", subforum_id=subforum_id,
                            permitted_users=permitted, blocked_users=blocked)
 
-@app.route("/subforum/delete/<int:subforum_id>")
+@app.route("/subforum/delete/<int:subforum_id>", methods=["POST"])
 def delete_subforum(subforum_id):
     if "username" not in session:
         return redirect(url_for("signin"))
+
+    if session["csrf_token"] != request.form["csrf_token"]:
+        abort(403)
 
     if not users.is_admin(session["username"]):
         return redirect(url_for("forums"))
@@ -247,6 +254,9 @@ def save_thr(thr_id):
     if "username" not in session:
         return redirect(url_for("signin"))
 
+    if session["csrf_token"] != request.form["csrf_token"]:
+        abort(403)
+
     is_admin = users.is_admin(session["username"])
     thr = threads.get_thr(thr_id)
 
@@ -258,17 +268,17 @@ def save_thr(thr_id):
     if len(title) < 1 or len(title) > 30:
         return redirect(url_for("edit_thr", thr_id=thr_id))
 
-    if session["csrf_token"] != request.form["csrf_token"]:
-        abort(403)
-
     threads.edit_thr(thr_id, title)
 
     return redirect(url_for("thread", thr_id=thr_id))
 
-@app.route("/thread/delete/<int:thr_id>")
+@app.route("/thread/delete/<int:thr_id>", methods=["POST"])
 def delete_thr(thr_id):
     if "username" not in session:
         return redirect(url_for("signin"))
+
+    if session["csrf_token"] != request.form["csrf_token"]:
+        abort(403)
 
     is_admin = users.is_admin(session["username"])
     thr = threads.get_thr(thr_id)
@@ -333,6 +343,9 @@ def save(msg_id):
     if "username" not in session:
         return redirect(url_for("signin"))
 
+    if session["csrf_token"] != request.form["csrf_token"]:
+        abort(403)
+
     user = users.get_user(session["username"])
     msg = messages.get_msg(msg_id)
 
@@ -344,17 +357,17 @@ def save(msg_id):
     if len(content) < 1 or len(content) > 100:
         return redirect(url_for("edit", msg_id=msg_id))
 
-    if session["csrf_token"] != request.form["csrf_token"]:
-        abort(403)
-
     messages.edit_msg(msg_id, content)
 
     return redirect(url_for("thread", thr_id=msg.thread))
 
-@app.route("/delete/<int:msg_id>")
+@app.route("/delete/<int:msg_id>", methods=["POST"])
 def delete(msg_id):
     if "username" not in session:
         return redirect(url_for("signin"))
+
+    if session["csrf_token"] != request.form["csrf_token"]:
+        abort(403)
 
     msg = messages.get_msg(msg_id)
 
@@ -410,10 +423,13 @@ def delete_permission():
 
     return redirect(url_for("edit_subforum", subforum_id=subforum_id))
 
-@app.route("/like/<int:msg_id>")
+@app.route("/like/<int:msg_id>", methods=["POST"])
 def like(msg_id):
     if "username" not in session:
         return redirect(url_for("signin"))
+
+    if session["csrf_token"] != request.form["csrf_token"]:
+        abort(403)
 
     thr = threads.get_thr(messages.get_msg(msg_id).thread)
 
@@ -424,10 +440,13 @@ def like(msg_id):
 
     return redirect(url_for("thread", thr_id=thr.id))
 
-@app.route("/dislike/<int:msg_id>")
+@app.route("/dislike/<int:msg_id>", methods=["POST"])
 def dislike(msg_id):
     if "username" not in session:
         return redirect(url_for("signin"))
+
+    if session["csrf_token"] != request.form["csrf_token"]:
+        abort(403)
 
     thr = threads.get_thr(messages.get_msg(msg_id).thread)
 
@@ -438,10 +457,13 @@ def dislike(msg_id):
 
     return redirect(url_for("thread", thr_id=thr.id))
 
-@app.route("/unlike/<int:msg_id>")
+@app.route("/unlike/<int:msg_id>", methods=["POST"])
 def unlike(msg_id):
     if "username" not in session:
         return redirect(url_for("signin"))
+
+    if session["csrf_token"] != request.form["csrf_token"]:
+        abort(403)
 
     thr = threads.get_thr(messages.get_msg(msg_id).thread)
 

@@ -13,17 +13,30 @@
     <a href="/reply/{{ message.id }}">Vastaa</a>
     {% if session.username == message.user or is_admin %}
         &nbsp;<a href="/edit/{{ message.id }}">Muokkaa</a>
-        &nbsp;<a href="/delete/{{ message.id }}" onclick="return confirm('Poista viesti?')">Poista</a>
+
+        <form action="/delete/{{ message.id }}" method="POST" class="link">
+            &nbsp;<input type="submit" value="Poista" onclick="return confirm('Poista viesti?')">
+            <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+        </form>
     {% endif %}
     <br>
 
     {{ indent(depth) }}
     <b>{{ message.likes }} tykkäys{% if message.likes not in [1, -1] %}tä{% endif %}</b>
     {% if message.liked %}
-        <a href="/unlike/{{ message.id }}">Poista tykkäys</a>
+        <form action="/unlike/{{ message.id }}" method="POST" class="link">
+            <input type="submit" value="Poista tykkäys">
+            <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+        </form>
     {% else %}
-        <a href="/like/{{ message.id }}">+</a>
-        <a href="/dislike/{{ message.id }}">-</a>
+        <form action="/like/{{ message.id }}" method="POST" class="link">
+            <input type="submit" value="+">
+            <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+        </form>
+        <form action="/dislike/{{ message.id }}" method="POST" class="link">
+            <input type="submit" value="-">
+            <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+        </form>
     {% endif %}
 {% endmacro %}
 
