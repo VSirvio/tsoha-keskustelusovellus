@@ -1,4 +1,6 @@
+import re
 import secrets
+import unicodedata
 from flask import render_template, redirect, abort, request, session, url_for
 from werkzeug.security import check_password_hash, generate_password_hash
 from app import app
@@ -56,7 +58,9 @@ def logout():
 def registration():
     if "username" in session:
         return redirect(url_for("forums"))
-    return render_template("registration.html")
+    return render_template("registration.html",
+                           allowed_chars=config.USERNAME_ALLOWED_CHARS,
+                           invalid_username_msg=config.INVALID_USERNAME_MSG)
 
 @app.route("/register", methods=["POST"])
 def register():
@@ -73,6 +77,8 @@ def register():
         error_message = "Lyhin sallittu tunnuksen pituus on 5 merkkiä"
     elif len(username) > 30:
         error_message = "Pisin sallittu tunnuksen pituus on 30 merkkiä"
+    elif re.search(f"[^{config.USERNAME_ALLOWED_CHARS}]", username):
+        error_message = config.INVALID_USERNAME_MSG
     elif len(password) < 5:
         error_message = "Lyhin sallittu salasanan pituus on 5 merkkiä"
     elif len(password) > 30:
@@ -83,7 +89,9 @@ def register():
         error_message = "Antamasi tunnus on jo käytössä"
 
     if error_message:
-        return render_template("registration.html", error=error_message)
+        return render_template("registration.html", error=error_message,
+                           allowed_chars=config.USERNAME_ALLOWED_CHARS,
+                           invalid_username_msg=config.INVALID_USERNAME_MSG)
 
     users.register(username, generate_password_hash(password))
 
@@ -146,7 +154,9 @@ def create_subforum():
     desc = request.form["description"]
     is_secret = bool(request.form.get("secret"))
 
-    if len(title) < 1 or len(title) > 30 or len(desc) < 1 or len(desc) > 100:
+    if (len(title) < 1 or len(title) > 30 or
+        all(re.search("^[ZC]", unicodedata.category(c)) for c in title) or
+        len(desc) < 1 or len(desc) > 100):
         return redirect(url_for("forums"))
 
     subforums.new_subforum(title, desc, is_secret)
@@ -228,7 +238,8 @@ def create_thr(subforum_id):
     title = request.form["title"]
     msg = request.form["message"]
 
-    if len(title) < 1 or len(title) > 30 or len(msg) < 1 or len(msg) > 100:
+    if (len(title) < 1 or len(title) > 30 or len(msg) < 1 or len(msg) > 100 or
+        all(re.search("^[ZC]", unicodedata.category(c)) for c in title)):
         return redirect(url_for("new_thr", subforum_id=subforum_id))
 
     thr_id = threads.new_thr(users.get_user(session["username"]).id,

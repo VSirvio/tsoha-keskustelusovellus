@@ -25,6 +25,10 @@
                 alert("Otsikon suurin sallittu merkkimäärä on 30");
                 return false;
             }
+            if (/^[\p{Z}\p{C}]+$/u.test(form.title.value)) {
+                alert("Otsikossa tulee olla vähintään yksi tulostuva merkki");
+                return false;
+            }
             if (form.description.value.length < 1) {
                 alert("Kuvauksen pienin sallittu merkkimäärä on 1");
                 return false;

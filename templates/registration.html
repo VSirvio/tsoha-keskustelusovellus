@@ -30,6 +30,10 @@
             alert("Pisin sallittu tunnuksen pituus on 30 merkkiä");
             return false;
         }
+        if (/[^{{ allowed_chars }}]/.test(form.username.value)) {
+            alert("{{ invalid_username_msg }}");
+            return false;
+        }
         if (form.password.value.length < 5) {
             alert("Lyhin sallittu salasanan pituus on 5 merkkiä");
             return false;
