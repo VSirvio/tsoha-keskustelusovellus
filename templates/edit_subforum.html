@@ -3,37 +3,79 @@
 {% block previous %}/forums{% endblock %}
 
 {% block content %}
-    <title>Keskustelualueen asetukset</title>
 
-    <br>
+  <title>Keskustelualueen asetukset</title>
 
-    <h4>Sallitut käyttäjät</h4>
+  <div class="col-4">
+
+    <div class="row">
+      <div class="col">
+        <h4 class="mt-5 mb-1">Sallitut käyttäjät</h4>
+      </div>
+    </div>
+
     {% for user in permitted_users %}
-        {{ user.username }}
-        <form action="/permission/delete" method="POST" style="display: inline">
+
+      <div class="row">
+        <div class="col mt-3">
+
+          <form action="/permission/delete" method="POST">
             <input type="hidden" name="uid" value="{{ user.id }}">
             <input type="hidden" name="subforum" value="{{ subforum_id }}">
-            <input type="submit" value="Estä">
-            <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-        </form>
-        <br>
+            <input type="hidden" name="csrf_token"
+                   value="{{ session.csrf_token }}">
+            <button type="submit" class="btn btn-outline-success">
+              {{ user.username }}
+            </button>
+          </form>
+
+        </div>
+      </div>
+
     {% else %}
-        Ei sallittuja käyttäjiä
+
+      <div class="row">
+        <div class="col mt-2">
+          Ei sallittuja käyttäjiä
+        </div>
+      </div>
+
     {% endfor %}
 
-    <br>
+    <div class="row">
+      <div class="col">
+        <h4 class="mt-5 mb-1">Estetyt käyttäjät</h4>
+      </div>
+    </div>
 
-    <h4>Estetyt käyttäjät</h4>
     {% for user in blocked_users %}
-        {{ user.username }}
-        <form action="/permission/add" method="POST" style="display: inline">
+
+      <div class="row">
+        <div class="col mt-3">
+
+          <form action="/permission/add" method="POST">
             <input type="hidden" name="uid" value="{{ user.id }}">
             <input type="hidden" name="subforum" value="{{ subforum_id }}">
-            <input type="submit" value="Salli">
-            <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-        </form>
-        <br>
+            <input type="hidden" name="csrf_token"
+                   value="{{ session.csrf_token }}">
+            <button type="submit" class="btn btn-outline-danger">
+              {{ user.username }}
+            </button>
+          </form>
+
+        </div>
+      </div>
+
     {% else %}
-        Ei estettyjä käyttäjiä
+
+      <div class="row">
+        <div class="col mt-2">
+          Ei estettyjä käyttäjiä
+        </div>
+      </div>
+
     {% endfor %}
+
+  </div>
+
 {% endblock %}

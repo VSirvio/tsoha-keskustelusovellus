@@ -3,34 +3,57 @@
 {% block previous %}/thread/{{ thr.id }}{% endblock %}
 
 {% block content %}
-    <title>Muokkaa ketjua</title>
 
-    <br><br>
+  <title>Muokkaa keskustelua</title>
 
-    <form action="/thread/save/{{ thr.id }}" method="POST" onsubmit="return check(this)">
-        Otsikko: <input type="text" name="title" value="{{ thr.title }}" autofocus><br>
-        <input type="submit" value="Tallenna">
-        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+  {{
+    confirm_modal(
+      "deletionModal",
+      "Poista keskustelu?",
+      "/thread/delete/" + (thr.id|string)
+    )
+  }}
+
+  <div class="col-4 mt-5">
+
+    <h3 class="mb-4">Muokkaa keskustelua</h3>
+
+    <form action="/thread/save/{{ thr.id }}" method="POST">
+
+      <div class="mb-3">
+        <label for="title" class="form-label">Otsikko</label>
+        <input type="text" class="form-control" id="title" name="title"
+               value="{{ thr.title }}" pattern=".*[^\p{Z}\p{C}].*"
+               maxlength="30" required autofocus>
+      </div>
+
+      <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+
+      <button type="submit" class="btn btn-primary">Tallenna</button>
+
     </form>
 
-    <br>
+    <button type="button" class="btn btn-link border-0 p-0 mt-3"
+            data-bs-toggle="modal" data-bs-target="#deletionModal">
+      Poista keskustelu
+    </button>
 
-    <form action="/thread/delete/{{ thr.id }}" method="POST" class="link">
-        <input type="submit" value="Poista ketju" onclick="return confirm('Poista ketju?')">
-        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-    </form>
+  </div>
 
-    <script>
-        function check(form) {
-            if (form.title.value.length < 1) {
-                alert("Lyhin sallittu otsikon pituus on 1");
-                return false;
-            }
-            if (form.title.value.length > 30) {
-                alert("Pisin sallittu otsikon pituus on 30");
-                return false;
-            }
-            return true;
-        }
-    </script>
+  <script>
+
+    const title = document.getElementById("title");
+
+    title.addEventListener("input", event => {
+      if (title.validity.patternMismatch) {
+        title.setCustomValidity(
+          "Otsikon tulee sisältää vähintään yksi tulostuva merkki."
+        );
+      } else {
+        title.setCustomValidity("");
+      }
+    });
+
+  </script>
+
 {% endblock %}

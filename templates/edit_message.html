@@ -3,27 +3,20 @@
 {% block previous %}/thread/{{ msg.thread }}{% endblock %}
 
 {% block content %}
-    <title>Muokkaa viestiä</title>
 
-    <br><br>
+  <title>Muokkaa viestiä</title>
 
-    <form action="/save/{{ msg.id }}" method="POST" onsubmit="return check(this)">
-        Viesti: <input type="text" name="content" value="{{ msg.content }}" autofocus><br>
-        <input type="submit" value="Tallenna">
-        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+  <div class="col-4 mt-5">
+
+    <h3 class="mb-4">Muokkaa viestiä</h3>
+
+    <form action="/save/{{ msg.id }}" method="POST">
+      <input type="text" class="form-control mb-3" name="content"
+             value="{{ msg.content }}" maxlength="100" required autofocus>
+      <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+      <button type="submit" class="btn btn-primary">Lähetä</button>
     </form>
 
-    <script>
-        function check(form) {
-            if (form.content.value.length < 1) {
-                alert("Lyhin sallittu viestin pituus on 1");
-                return false;
-            }
-            if (form.content.value.length > 100) {
-                alert("Pisin sallittu viestin pituus on 100");
-                return false;
-            }
-            return true;
-        }
-    </script>
+  </div>
+
 {% endblock %}
