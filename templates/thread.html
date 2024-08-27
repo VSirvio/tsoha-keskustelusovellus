@@ -1,89 +1,189 @@
 {% extends "layout.html" %}
 
-{% macro indent(level) %}
-    {{ "&nbsp;"|safe*(level * 4) }}
-{% endmacro %}
-
 {% macro msg_view(message, depth=0) %}
-    {{ indent(depth) }}<span class="timestamp">{{ message.time_str }}</span><br>
 
-    {{ indent(depth) }}<b>{{ message.user }}:</b> {{ message.content }}<br>
+  {{
+    confirm_modal(
+      "deletionModal" + (message.id|string),
+      "Poista viesti?",
+      "/delete/" + (message.id|string)
+    )
+  }}
 
-    {{ indent(depth) }}
-    <a href="/reply/{{ message.id }}">Vastaa</a>
-    {% if session.username == message.user or is_admin %}
-        &nbsp;<a href="/edit/{{ message.id }}">Muokkaa</a>
+  <div class="row">
+    <div class="col mt-4" style="margin-left: {{ 1.5 * depth }}rem">
 
-        <form action="/delete/{{ message.id }}" method="POST" class="link">
-            &nbsp;<input type="submit" value="Poista" onclick="return confirm('Poista viesti?')">
-            <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-        </form>
-    {% endif %}
-    <br>
+      <div class="row align-items-end gx-1">
 
-    {{ indent(depth) }}
-    <b>{{ message.likes }} tykkäys{% if message.likes not in [1, -1] %}tä{% endif %}</b>
-    {% if message.liked %}
-        <form action="/unlike/{{ message.id }}" method="POST" class="link">
-            <input type="submit" value="Poista tykkäys">
-            <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-        </form>
-    {% else %}
-        <form action="/like/{{ message.id }}" method="POST" class="link">
-            <input type="submit" value="+">
-            <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-        </form>
-        <form action="/dislike/{{ message.id }}" method="POST" class="link">
-            <input type="submit" value="-">
-            <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-        </form>
-    {% endif %}
+        <div class="col-auto fw-semibold fs-5 me-1">
+          {{ message.user }}
+        </div>
+
+        <div class="col-auto">
+          <a href="/reply/{{ message.id }}">
+            <i class="bi bi-chat-left-dots"></i>
+          </a>
+        </div>
+
+        {% if session.username == message.user or is_admin %}
+
+          <div class="col-auto">
+            <a href="/edit/{{ message.id }}">
+              <i class="bi bi-pencil"></i>
+            </a>
+          </div>
+
+          <div class="col-auto">
+            <button type="submit" class="btn btn-link p-0 border-0"
+                    data-bs-toggle="modal"
+                    data-bs-target="#deletionModal{{ message.id }}">
+              <i class="bi bi-trash"></i>
+            </button>
+          </div>
+
+        {% endif %}
+
+        <div class="col-auto small text-black-50">
+          {{ message.time_str }}
+        </div>
+
+      </div>
+
+      <div class="row">
+        <div class="col">
+          {{ message.content }}
+        </div>
+      </div>
+
+      <div class="row gx-1">
+
+        <div class="col-auto">
+          <span class="badge rounded-pill badge-outline-primary">
+            {{ message.likes|abs }}
+            {% if message.likes < 0 %}
+              <i class="bi bi-hand-thumbs-down"></i>
+            {% else %}
+              <i class="bi bi-hand-thumbs-up"></i>
+            {% endif %}
+          </span>
+        </div>
+
+        {% if message.liked %}
+
+          <div class="col-auto">
+            <form action="/unlike/{{ message.id }}" method="POST">
+              <input type="hidden" name="csrf_token"
+                     value="{{ session.csrf_token }}">
+              <button type="submit" class="btn btn-link border-0 p-0">
+                Poista tykkäys
+              </button>
+            </form>
+          </div>
+
+        {% else %}
+
+          <div class="col-auto">
+            <form action="/like/{{ message.id }}" method="POST">
+              <input type="hidden" name="csrf_token"
+                     value="{{ session.csrf_token }}">
+              <button type="submit" class="btn btn-link border-0 p-0">
+                <i class="bi bi-hand-thumbs-up"></i>
+              </button>
+            </form>
+          </div>
+
+          <div class="col-auto">
+            <form action="/dislike/{{ message.id }}" method="POST">
+              <input type="hidden" name="csrf_token"
+                     value="{{ session.csrf_token }}">
+              <button type="submit" class="btn btn-link border-0 p-0">
+                <i class="bi bi-hand-thumbs-down"></i>
+              </button>
+            </form>
+          </div>
+
+        {% endif %}
+
+      </div>
+
+    </div>
+  </div>
+
 {% endmacro %}
 
 {% block previous %}/subforum/{{ thread.subforum }}{% endblock %}
 
 {% block content %}
-    <title>{{ thread.title }} - Viestiketju</title>
+  <title>{{ thread.title }} - Viestiketju</title>
 
-    <br>
-    <h3 style="display: inline">{{ thread.title }}</h3>
-    {% if session.username == thread.username or is_admin %}
-        &nbsp;<a href="/thread/edit/{{ thread.id }}" class="title-action">Muokkaa</a>
-    {% endif %}
-    <br><br>
+  <div class="col-5 mt-5">
 
-    {{ msg_view(first_msg) }}<br>
+    <div class="row">
+      <div class="col mb-1">
+
+        <h3 class="d-inline">{{ thread.title }}</h3>
+
+        {% if session.username == thread.username or is_admin %}
+
+          <a class="d-inline-block small align-top mt-2 ms-2"
+             href="/thread/edit/{{ thread.id }}">
+            Muokkaa
+          </a>
+
+        {% endif %}
+
+      </div>
+    </div>
+
+    {{ msg_view(first_msg) }}
 
     {% if first_msg.replies %}
-        <br>
 
-        <form action="/thread/{{ thread.id }}" method="GET">
-            <select name="order_by" onchange="this.form.submit()">
-                <option value="newest" {% if order_by == "newest" %}selected{% endif %}>
-                    Uusimmat
-                </option>
-                <option value="oldest" {% if order_by == "oldest" %}selected{% endif %}>
-                    Vanhimmat
-                </option>
-                <option value="most_liked" {% if order_by == "most_liked" %}selected{% endif %}>
-                    Tykätyimmät
-                </option>
-                <option value="most_disliked" {% if order_by == "most_disliked" %}selected{% endif %}>
-                    Vihatuimmat
-                </option>
+      <div class="row">
+        <div class="col mt-4">
+
+          <form action="/thread/{{ thread.id }}" method="GET">
+            <select class="form-select w-50" name="order_by"
+                    onchange="this.form.submit()">
+
+              <option value="newest"
+                      {% if order_by == "newest" %}selected{% endif %}>
+                Uusimmat
+              </option>
+
+              <option value="oldest"
+                      {% if order_by == "oldest" %}selected{% endif %}>
+                Vanhimmat
+              </option>
+
+              <option value="most_liked"
+                      {% if order_by == "most_liked" %}selected{% endif %}>
+                Tykätyimmät
+              </option>
+
+              <option value="most_disliked"
+                      {% if order_by == "most_disliked" %}selected{% endif %}>
+                Vihatuimmat
+              </option>
+
             </select>
-        </form>
+          </form>
 
-        <hr>
+        </div>
+      </div>
+
     {% endif %}
 
-    {% for message in (msgs|selectattr("id", "in", first_msg.replies)) recursive %}
-        {{ msg_view(message, loop.depth) }}
+    {% for msg in (msgs|selectattr("id", "in", first_msg.replies)) recursive %}
 
-        <hr>
+      {{ msg_view(msg, loop.depth) }}
 
-        {% if message.replies %}
-            {{ loop(msgs|selectattr("id", "in", message.replies)) }}
-        {% endif %}
+      {% if msg.replies %}
+        {{ loop(msgs|selectattr("id", "in", msg.replies)) }}
+      {% endif %}
+
     {% endfor %}
+
+  </div>
+
 {% endblock %}

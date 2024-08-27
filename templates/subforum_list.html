@@ -3,59 +3,109 @@
 {% block back %}{% endblock %}
 
 {% block content %}
-    <title>Keskustelualueet</title>
 
-    <br>
+  <title>Keskustelualueet</title>
 
-    <h3 style="display: inline">Keskustelualueet</h3>
-    {% if is_admin %}
-        &nbsp;<a href="/subforum/new" class="title-action">Luo uusi alue</a>
-    {% endif %}
+  <div class="col-4 mt-3">
 
-    <br><br>
+    <div class="row justify-content-center">
+      <div class="col-auto mt-5 mb-1">
+
+        <h3 class="d-inline">Keskustelualueet</h3>
+
+        {% if is_admin %}
+
+          <a class="d-inline-block small align-top mt-2 ms-2"
+             href="/subforum/new">
+            Luo uusi
+          </a>
+
+        {% endif %}
+
+      </div>
+    </div>
 
     {% for subforum in subforums %}
-        <a href="/subforum/{{ subforum.id }}">{{ subforum.title }}</a>
 
-        {% if subforum.threads == 1 %}
-            (1 ketju,
-        {% else %}
-            ({{ subforum.threads }} ketjua,
-        {% endif %}
+      {% if is_admin %}
+        {{
+          confirm_modal(
+            "deletionModal" + (subforum.id|string),
+            "Poista keskustelualue?",
+            "/subforum/delete/" + (subforum.id|string)
+          )
+        }}
+      {% endif %}
 
-        {% if subforum.messages == 1 %}
-            1 viesti)
-        {% else %}
-            {{ subforum.messages }} viestiä)
-        {% endif %}
+      <div class="row mt-4">
+        <div class="col">
 
-        {% if subforum.latest %}
-            <span class="timestamp">viimeisin viesti {{ subforum.latest }}</span>
-        {% endif %}
+          <a class="fw-semibold" href="/subforum/{{ subforum.id }}">
+            {{ subforum.title }}
+          </a>
 
-        <br>
-
-        <i>{{ subforum.description }}</i>
-
-        {% if is_admin %}
-            <br>
+          {% if is_admin %}
 
             {% if subforum.secret %}
-                <a href="/subforum/edit/{{ subforum.id }}">Muokkaa</a>&nbsp;
+              <a class="align-bottom ms-1"
+                 href="/subforum/edit/{{ subforum.id }}">
+                <i class="bi bi-pencil"></i>
+              </a>
             {% endif %}
 
-            <form action="/subforum/delete/{{ subforum.id }}" method="POST" class="link">
-                <input type="submit" value="Poista" onclick="return confirm('Poista keskustelualue?')">
-                <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-            </form>
-        {% endif %}
+            <button type="button"
+                    class="btn btn-link align-bottom p-0 border-0"
+                    data-bs-toggle="modal"
+                    data-bs-target="#deletionModal{{ subforum.id }}">
+              <i class="bi bi-trash"></i>
+            </button>
 
-        <hr>
+          {% else %}
+
+            <span class="small text-black-50">–</span>
+
+          {% endif %}
+
+          {% if subforum.latest %}
+            <span class="small text-black-50">
+              Viimeisin viesti {{ subforum.latest }}
+            </span>
+          {% endif %}
+
+          <div class="text-body-secondary">{{ subforum.description }}</div>
+
+          <span class="badge rounded-pill badge-outline-primary">
+            {% if subforum.threads == 1 %}
+              1 keskustelu
+            {% else %}
+              {{ subforum.threads }} keskustelua
+            {% endif %}
+          </span>
+          <span class="badge rounded-pill badge-outline-primary">
+            {% if subforum.messages == 1 %}
+              1 viesti
+            {% else %}
+              {{ subforum.messages }} viestiä
+            {% endif %}
+          </span>
+
+        </div>
+      </div>
+
     {% else %}
-        {% if is_admin %}
+
+      <div class="row mt-4">
+        <div class="col">
+          {% if is_admin %}
             Yhtäkään keskustelualuetta ei ole vielä luotu.
-        {% else %}
+          {% else %}
             Ylläpitäjä ei ole luonut vielä yhtäkään keskustelualuetta.
-        {% endif %}
+          {% endif %}
+        </div>
+      </div>
+
     {% endfor %}
+
+  </div>
+
 {% endblock %}
