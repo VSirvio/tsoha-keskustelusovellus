@@ -3,40 +3,49 @@
 {% block previous %}/subforum/{{ subforum_id }}{% endblock %}
 
 {% block content %}
-    <title>Luo uusi viestiketju</title>
 
-    <br><br>
+  <title>Luo uusi keskustelu</title>
 
-    <form action="/thread/create/{{ subforum_id }}" method="POST" onsubmit="return check(this)">
-        Otsikko: <input type="text" name="title" autofocus><br>
-        Aloitusviesti: <input type="text" name="message"><br>
-        <input type="submit" value="Luo ketju">
-        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+  <div class="col-4 mt-5">
+
+    <h3 class="mb-4">Luo keskustelu</h3>
+
+    <form action="/thread/create/{{ subforum_id }}" method="POST">
+
+      <div class="mb-3">
+        <label for="title" class="form-label">Otsikko</label>
+        <input type="text" class="form-control" id="title" name="title"
+               pattern=".*[^\p{Z}\p{C}].*" maxlength="30" required autofocus>
+      </div>
+
+      <div class="mb-3">
+        <label for="message" class="form-label">Aloitusviesti</label>
+        <input type="text" class="form-control" id="message" name="message"
+               maxlength="100" required>
+      </div>
+
+      <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+
+      <button type="submit" class="btn btn-primary">Luo keskustelu</button>
+
     </form>
 
-    <script>
-        function check(form) {
-            if (form.title.value.length < 1) {
-                alert("Otsikon pienin sallittu merkkimäärä on 1");
-                return false;
-            }
-            if (form.title.value.length > 30) {
-                alert("Otsikon suurin sallittu merkkimäärä on 30");
-                return false;
-            }
-            if (/^[\p{Z}\p{C}]+$/u.test(form.title.value)) {
-                alert("Otsikossa tulee olla vähintään yksi tulostuva merkki");
-                return false;
-            }
-            if (form.message.value.length < 1) {
-                alert("Viestin pienin sallittu merkkimäärä on 1");
-                return false;
-            }
-            if (form.message.value.length > 100) {
-                alert("Viestin suurin sallittu merkkimäärä on 100");
-                return false;
-            }
-            return true;
-        }
-    </script>
+  </div>
+
+  <script>
+
+    const title = document.getElementById("title");
+
+    title.addEventListener("input", event => {
+      if (title.validity.patternMismatch) {
+        title.setCustomValidity(
+          "Otsikon tulee sisältää vähintään yksi tulostuva merkki."
+        );
+      } else {
+        title.setCustomValidity("");
+      }
+    });
+
+  </script>
+
 {% endblock %}
