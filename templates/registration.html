@@ -52,8 +52,8 @@
 
         <div class="mb-3">
           <label for="password2" class="form-label">Salasana uudelleen</label>
-          <input type="password" class="form-control" id="password2"
-                 name="password2" oninput="check()">
+          <input type="password" class="form-control"
+                 id="password2" name="password2">
         </div>
 
         <button type="submit" class="btn btn-primary">Rekisteröidy</button>
@@ -69,13 +69,15 @@
 
 <script>
 
-    function check() {
-        let password = document.getElementById("password");
-        let password2 = document.getElementById("password2");
+  const password = document.getElementById("password");
+  const password2 = document.getElementById("password2");
 
-        if (password.value != password2.value) {
-            password2.setCustomValidity("Annetut salasanat eivät täsmää.");
-        }
+  password2.addEventListener("input", event => {
+    if (password.value != password2.value) {
+      password2.setCustomValidity("Annetut salasanat eivät täsmää.");
+    } else {
+      password2.setCustomValidity("");
     }
+  });
 
 </script>
