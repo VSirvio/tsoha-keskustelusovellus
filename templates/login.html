@@ -13,23 +13,8 @@
 <div class="container">
 
   {% if error %}
-
-    <div class="row justify-content-center mt-2">
-      <div class="col-auto">
-
-        <div class="alert alert-danger alert-dismissible fade show"
-             role="alert">
-
-          <div class="px-2">{{ error }}</div>
-
-          <button type="button" class="btn-close" data-bs-dismiss="alert">
-          </button>
-
-        </div>
-
-      </div>
-    </div>
-
+    {% from "macros.html" import error_alert %}
+    {{ error_alert(error) }}
   {% endif %}
 
   <div class="row justify-content-center mt-5">
