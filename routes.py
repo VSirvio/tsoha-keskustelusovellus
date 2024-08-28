@@ -1,7 +1,8 @@
 import re
 import secrets
 import unicodedata
-from flask import render_template, redirect, abort, request, session, url_for
+from flask import flash, render_template, redirect, abort, request, session, \
+                  url_for
 from werkzeug.security import check_password_hash, generate_password_hash
 from app import app
 import config
@@ -26,19 +27,24 @@ def login():
     username = request.form["username"]
     password = request.form["password"]
 
+    error = False
+
     if len(username) > 30:
-        error_message = "Pisin sallittu tunnuksen pituus on 30 merkkiä"
-        return render_template("login.html", error=error_message)
+        flash("Pisin sallittu tunnuksen pituus on 30 merkkiä")
+        error = True
 
     if len(password) > 30:
-        error_message = "Pisin sallittu salasanan pituus on 30 merkkiä"
-        return render_template("login.html", error=error_message)
+        flash("Pisin sallittu salasanan pituus on 30 merkkiä")
+        error = True
+
+    if error:
+        return redirect(url_for("signin"))
 
     user = users.get_user(username)
 
     if (not user) or (not check_password_hash(user.password, password)):
-        error_message = "Virheellinen käyttäjätunnus tai salasana"
-        return render_template("login.html", error=error_message)
+        flash("Virheellinen käyttäjätunnus tai salasana")
+        return redirect(url_for("signin"))
 
     session["username"] = username
     session["csrf_token"] = secrets.token_hex(16)
@@ -71,27 +77,30 @@ def register():
     password = request.form["password"]
     password2 = request.form["password2"]
 
-    error_message = None
+    error = False
 
-    if len(username) < 5:
-        error_message = "Lyhin sallittu tunnuksen pituus on 5 merkkiä"
-    elif len(username) > 30:
-        error_message = "Pisin sallittu tunnuksen pituus on 30 merkkiä"
-    elif re.search(f"[^{config.USERNAME_ALLOWED_CHARS}]", username):
-        error_message = config.INVALID_USERNAME_MSG
-    elif len(password) < 5:
-        error_message = "Lyhin sallittu salasanan pituus on 5 merkkiä"
-    elif len(password) > 30:
-        error_message = "Pisin sallittu salasanan pituus on 30 merkkiä"
-    elif password != password2:
-        error_message = "Annetut salasanat eivät täsmää"
-    elif users.get_user(username):
-        error_message = "Antamasi tunnus on jo käytössä"
+    if len(username) < 5 or len(username) > 30:
+        flash("Tunnuksen tulee olla 5-30 merkin pituinen")
+        error = True
 
-    if error_message:
-        return render_template("registration.html", error=error_message,
-                           allowed_chars=config.USERNAME_ALLOWED_CHARS,
-                           invalid_username_msg=config.INVALID_USERNAME_MSG)
+    if re.search(f"[^{config.USERNAME_ALLOWED_CHARS}]", username):
+        flash(config.INVALID_USERNAME_MSG)
+        error = True
+
+    if len(password) < 5 or len(password) > 30:
+        flash("Salasanan tulee olla 5-30 merkin pituinen")
+        error = True
+
+    if password != password2:
+        flash("Annetut salasanat eivät täsmää")
+        error = True
+
+    if users.get_user(username):
+        flash("Antamasi tunnus on jo käytössä")
+        error = True
+
+    if error:
+        return redirect(url_for("registration"))
 
     users.register(username, generate_password_hash(password))
 
