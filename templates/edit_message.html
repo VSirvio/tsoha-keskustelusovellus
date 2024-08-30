@@ -1,5 +1,7 @@
 {% extends "layout.html" %}
 
+{% from "macros.html" import invalid_msg_body %}
+
 {% block previous %}/thread/{{ msg.thread }}{% endblock %}
 
 {% block content %}
@@ -10,9 +12,16 @@
 
     <h3 class="mb-4">Muokkaa viestiä</h3>
 
-    <form action="/save/{{ msg.id }}" method="POST">
-      <input type="text" class="form-control mb-3" name="content"
-             value="{{ msg.content }}" maxlength="100" required autofocus>
+    <form class="needs-validation" action="/save/{{ msg.id }}" method="POST"
+          novalidate>
+      <div class="mb-3">
+        <input type="text" name="content"
+               class="form-control {{ error_if("Invalid content") }}"
+               value="{{ msg.content }}" maxlength="100" required autofocus>
+        <div class="invalid-feedback">
+          {{ invalid_msg_body() }}
+        </div>
+      </div>
       <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
       <button type="submit" class="btn btn-primary">Lähetä</button>
     </form>

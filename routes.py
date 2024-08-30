@@ -12,6 +12,7 @@ import permissions
 import subforums
 import threads
 import users
+from utils import is_printable, nonprintable_chars_to_whitespace
 
 @app.route("/")
 def signin():
@@ -27,23 +28,14 @@ def login():
     username = request.form["username"]
     password = request.form["password"]
 
-    error = False
-
-    if len(username) > 30:
-        flash("Pisin sallittu tunnuksen pituus on 30 merkkiä")
-        error = True
-
-    if len(password) > 30:
-        flash("Pisin sallittu salasanan pituus on 30 merkkiä")
-        error = True
-
-    if error:
+    if len(username) > 30 or len(password) > 30:
+        flash("Invalid login info")
         return redirect(url_for("signin"))
 
     user = users.get_user(username)
 
     if (not user) or (not check_password_hash(user.password, password)):
-        flash("Virheellinen käyttäjätunnus tai salasana")
+        flash("Invalid login info")
         return redirect(url_for("signin"))
 
     session["username"] = username
@@ -65,8 +57,7 @@ def registration():
     if "username" in session:
         return redirect(url_for("forums"))
     return render_template("registration.html",
-                           allowed_chars=config.USERNAME_ALLOWED_CHARS,
-                           invalid_username_msg=config.INVALID_USERNAME_MSG)
+                           username_pattern=config.ALLOWED_USERNAME_PATTERN)
 
 @app.route("/register", methods=["POST"])
 def register():
@@ -79,24 +70,21 @@ def register():
 
     error = False
 
-    if len(username) < 5 or len(username) > 30:
-        flash("Tunnuksen tulee olla 5-30 merkin pituinen")
-        error = True
-
-    if re.search(f"[^{config.USERNAME_ALLOWED_CHARS}]", username):
-        flash(config.INVALID_USERNAME_MSG)
+    if (len(username) < 5 or len(username) > 30
+        or not re.fullmatch(config.ALLOWED_USERNAME_PATTERN, username)):
+        flash("Invalid username")
         error = True
 
     if len(password) < 5 or len(password) > 30:
-        flash("Salasanan tulee olla 5-30 merkin pituinen")
+        flash("Invalid password")
         error = True
 
     if password != password2:
-        flash("Annetut salasanat eivät täsmää")
+        flash("Passwords not matching")
         error = True
 
     if users.get_user(username):
-        flash("Antamasi tunnus on jo käytössä")
+        flash("Username already in use")
         error = True
 
     if error:
@@ -112,6 +100,7 @@ def register():
 @app.route("/forums")
 def forums():
     if "username" not in session:
+        flash(config.LOGIN_REQUIRED_MSG)
         return redirect(url_for("signin"))
 
     forum_list = subforums.get_subforums(session["username"])
@@ -122,16 +111,23 @@ def forums():
 @app.route("/subforum/<int:subforum_id>")
 def subforum(subforum_id):
     if "username" not in session:
+        flash(config.LOGIN_REQUIRED_MSG)
         return redirect(url_for("signin"))
 
+    cur_subforum = subforums.get_subforum(subforum_id)
+
+    if not cur_subforum:
+        flash("Kyseistä keskustelualuetta ei ole olemassa")
+        return redirect(url_for("forums"))
+
     if not subforums.is_permitted(subforum_id, session["username"]):
+        flash("Ei pääsyoikeutta kyseiselle keskustelualueelle")
         return redirect(url_for("forums"))
 
     order_by = request.args.get("order_by")
     if order_by not in ["newest", "oldest", "most_liked", "most_disliked"]:
         order_by = config.DEFAULT_ORDER
 
-    cur_subforum = subforums.get_subforum(subforum_id)
     thrs = threads.get_thrs(subforum_id, order_by)
 
     return render_template("subforum.html", subforum=cur_subforum, thrs=thrs,
@@ -141,9 +137,11 @@ def subforum(subforum_id):
 @app.route("/subforum/new")
 def new_subforum():
     if "username" not in session:
+        flash(config.LOGIN_REQUIRED_MSG)
         return redirect(url_for("signin"))
 
     if not users.is_admin(session["username"]):
+        flash(config.ADMIN_USER_REQUIRED_MSG)
         return redirect(url_for("forums"))
 
     return render_template("new_subforum.html")
@@ -151,9 +149,11 @@ def new_subforum():
 @app.route("/subforum/create", methods=["POST"])
 def create_subforum():
     if "username" not in session:
+        flash(config.LOGIN_REQUIRED_MSG)
         return redirect(url_for("signin"))
 
     if not users.is_admin(session["username"]):
+        flash(config.ADMIN_USER_REQUIRED_MSG)
         return redirect(url_for("forums"))
 
     if session["csrf_token"] != request.form["csrf_token"]:
@@ -163,10 +163,23 @@ def create_subforum():
     desc = request.form["description"]
     is_secret = bool(request.form.get("secret"))
 
-    if (len(title) < 1 or len(title) > 30 or
-        all(re.search("^[ZC]", unicodedata.category(c)) for c in title) or
-        len(desc) < 1 or len(desc) > 100):
-        return redirect(url_for("forums"))
+    error = False
+
+    if (len(title) < 1 or len(title) > 30
+        or all(not is_printable(char) for char in title)):
+        flash("Invalid title")
+        error = True
+
+    if (len(desc) < 1 or len(desc) > 100
+        or all(not is_printable(char) for char in desc)):
+        flash("Invalid description")
+        error = True
+
+    if error:
+        return redirect(url_for("new_subforum"))
+
+    title = nonprintable_chars_to_whitespace(title)
+    desc = nonprintable_chars_to_whitespace(desc)
 
     subforums.new_subforum(title, desc, is_secret)
 
@@ -175,9 +188,15 @@ def create_subforum():
 @app.route("/subforum/edit/<int:subforum_id>")
 def edit_subforum(subforum_id):
     if "username" not in session:
+        flash(config.LOGIN_REQUIRED_MSG)
         return redirect(url_for("signin"))
 
     if not users.is_admin(session["username"]):
+        flash(config.ADMIN_USER_REQUIRED_MSG)
+        return redirect(url_for("forums"))
+
+    if not subforums.get_subforum(subforum_id):
+        flash("Kyseistä keskustelualuetta ei ole olemassa")
         return redirect(url_for("forums"))
 
     permitted = permissions.get_permitted_users(subforum_id)
@@ -189,10 +208,15 @@ def edit_subforum(subforum_id):
 @app.route("/subforum/delete/<int:subforum_id>", methods=["POST"])
 def delete_subforum(subforum_id):
     if "username" not in session:
+        flash(config.LOGIN_REQUIRED_MSG)
         return redirect(url_for("signin"))
 
     if session["csrf_token"] != request.form["csrf_token"]:
         abort(403)
+
+    if not subforums.get_subforum(subforum_id):
+        flash("Kyseistä keskustelualuetta ei ole olemassa")
+        return redirect(url_for("forums"))
 
     if not users.is_admin(session["username"]):
         return redirect(url_for("forums"))
@@ -204,11 +228,17 @@ def delete_subforum(subforum_id):
 @app.route("/thread/<int:thr_id>")
 def thread(thr_id):
     if "username" not in session:
+        flash(config.LOGIN_REQUIRED_MSG)
         return redirect(url_for("signin"))
 
     thr = threads.get_thr(thr_id)
 
+    if not thr:
+        flash("Kyseistä keskustelua ei ole olemassa")
+        return redirect(url_for("forums"))
+
     if not subforums.is_permitted(thr.subforum, session["username"]):
+        flash("Ei pääsyoikeutta kyseiseen keskusteluun")
         return redirect(url_for("forums"))
 
     order_by = request.args.get("order_by")
@@ -226,9 +256,15 @@ def thread(thr_id):
 @app.route("/thread/new/<int:subforum_id>")
 def new_thr(subforum_id):
     if "username" not in session:
+        flash(config.LOGIN_REQUIRED_MSG)
         return redirect(url_for("signin"))
 
+    if not subforums.get_subforum(subforum_id):
+        flash("Kyseistä keskustelualuetta ei ole olemassa")
+        return redirect(url_for("forums"))
+
     if not subforums.is_permitted(subforum_id, session["username"]):
+        flash("Ei pääsyoikeutta kyseiselle keskustelualueelle")
         return redirect(url_for("forums"))
 
     return render_template("new_thread.html", subforum_id=subforum_id)
@@ -236,20 +272,38 @@ def new_thr(subforum_id):
 @app.route("/thread/create/<int:subforum_id>", methods=["POST"])
 def create_thr(subforum_id):
     if "username" not in session:
+        flash(config.LOGIN_REQUIRED_MSG)
         return redirect(url_for("signin"))
 
     if session["csrf_token"] != request.form["csrf_token"]:
         abort(403)
 
+    if not subforums.get_subforum(subforum_id):
+        flash("Kyseistä keskustelualuetta ei ole olemassa")
+        return redirect(url_for("forums"))
+
     if not subforums.is_permitted(subforum_id, session["username"]):
+        flash("Ei pääsyoikeutta kyseiselle keskustelualueelle")
         return redirect(url_for("forums"))
 
     title = request.form["title"]
     msg = request.form["message"]
 
-    if (len(title) < 1 or len(title) > 30 or len(msg) < 1 or len(msg) > 100 or
-        all(re.search("^[ZC]", unicodedata.category(c)) for c in title)):
+    error = False
+
+    if (len(title) < 1 or len(title) > 30
+        or all(not is_printable(char) for char in title)):
+        flash("Invalid title")
+        error = True
+
+    if len(msg) < 1 or len(msg) > 100:
+        flash("Invalid message")
+        error = True
+
+    if error:
         return redirect(url_for("new_thr", subforum_id=subforum_id))
+
+    title = nonprintable_chars_to_whitespace(title)
 
     thr_id = threads.new_thr(users.get_user(session["username"]).id,
                              subforum_id, title, msg)
@@ -259,19 +313,26 @@ def create_thr(subforum_id):
 @app.route("/thread/edit/<int:thr_id>")
 def edit_thr(thr_id):
     if "username" not in session:
+        flash(config.LOGIN_REQUIRED_MSG)
         return redirect(url_for("signin"))
 
     is_admin = users.is_admin(session["username"])
     thr = threads.get_thr(thr_id)
 
+    if not thr:
+        flash("Kyseistä keskustelua ei ole olemassa")
+        return redirect(url_for("forums"))
+
     if session["username"] != thr.username and not is_admin:
-        return redirect(url_for("thread", thr_id=thr_id))
+        flash("Ei muokkausoikeutta kyseiseen keskusteluun")
+        return redirect(url_for("forums"))
 
     return render_template("edit_thread.html", thr=thr)
 
 @app.route("/thread/save/<int:thr_id>", methods=["POST"])
 def save_thr(thr_id):
     if "username" not in session:
+        flash(config.LOGIN_REQUIRED_MSG)
         return redirect(url_for("signin"))
 
     if session["csrf_token"] != request.form["csrf_token"]:
@@ -280,13 +341,22 @@ def save_thr(thr_id):
     is_admin = users.is_admin(session["username"])
     thr = threads.get_thr(thr_id)
 
+    if not thr:
+        flash("Kyseistä keskustelua ei ole olemassa")
+        return redirect(url_for("forums"))
+
     if session["username"] != thr.username and not is_admin:
-        return redirect(url_for("thread", thr_id=thr_id))
+        flash("Ei muokkausoikeutta kyseiseen keskusteluun")
+        return redirect(url_for("forums"))
 
     title = request.form["title"]
 
-    if len(title) < 1 or len(title) > 30:
+    if (len(title) < 1 or len(title) > 30
+        or all(not is_printable(char) for char in title)):
+        flash("Invalid title")
         return redirect(url_for("edit_thr", thr_id=thr_id))
+
+    title = nonprintable_chars_to_whitespace(title)
 
     threads.edit_thr(thr_id, title)
 
@@ -295,6 +365,7 @@ def save_thr(thr_id):
 @app.route("/thread/delete/<int:thr_id>", methods=["POST"])
 def delete_thr(thr_id):
     if "username" not in session:
+        flash(config.LOGIN_REQUIRED_MSG)
         return redirect(url_for("signin"))
 
     if session["csrf_token"] != request.form["csrf_token"]:
@@ -303,8 +374,13 @@ def delete_thr(thr_id):
     is_admin = users.is_admin(session["username"])
     thr = threads.get_thr(thr_id)
 
+    if not thr:
+        flash("Kyseistä keskustelua ei ole olemassa")
+        return redirect(url_for("forums"))
+
     if session["username"] != thr.username and not is_admin:
-        return redirect(url_for("subforum", subforum_id=thr.subforum))
+        flash("Ei muokkausoikeutta kyseiseen keskusteluun")
+        return redirect(url_for("forums"))
 
     threads.delete_thr(thr_id)
 
@@ -313,11 +389,19 @@ def delete_thr(thr_id):
 @app.route("/reply/<int:msg_id>")
 def message(msg_id):
     if "username" not in session:
+        flash(config.LOGIN_REQUIRED_MSG)
         return redirect(url_for("signin"))
 
-    thr = threads.get_thr(messages.get_msg(msg_id).thread)
+    msg = messages.get_msg(msg_id)
+
+    if not msg:
+        flash("Kyseistä viestiä ei ole olemassa")
+        return redirect(url_for("forums"))
+
+    thr = threads.get_thr(msg.thread)
 
     if not subforums.is_permitted(thr.subforum, session["username"]):
+        flash("Ei pääsyoikeutta kyseiselle keskustelualueelle")
         return redirect(url_for("forums"))
 
     return render_template("new_message.html", msg_id=msg_id, thr_id=thr.id)
@@ -325,19 +409,28 @@ def message(msg_id):
 @app.route("/send/<int:orig_id>", methods=["POST"])
 def send(orig_id):
     if "username" not in session:
+        flash(config.LOGIN_REQUIRED_MSG)
         return redirect(url_for("signin"))
 
     if session["csrf_token"] != request.form["csrf_token"]:
         abort(403)
 
-    thr = threads.get_thr(messages.get_msg(orig_id).thread)
+    msg = messages.get_msg(orig_id)
+
+    if not msg:
+        flash("Kyseistä viestiä ei ole olemassa")
+        return redirect(url_for("forums"))
+
+    thr = threads.get_thr(msg.thread)
 
     if not subforums.is_permitted(thr.subforum, session["username"]):
+        flash("Ei pääsyoikeutta kyseiselle keskustelualueelle")
         return redirect(url_for("forums"))
 
     content = request.form["content"]
 
     if len(content) < 1 or len(content) > 100:
+        flash("Invalid message")
         return redirect(url_for("message", msg_id=orig_id))
 
     user = users.get_user(session["username"])
@@ -348,19 +441,26 @@ def send(orig_id):
 @app.route("/edit/<int:msg_id>")
 def edit(msg_id):
     if "username" not in session:
+        flash(config.LOGIN_REQUIRED_MSG)
         return redirect(url_for("signin"))
 
     user = users.get_user(session["username"])
     msg = messages.get_msg(msg_id)
 
+    if not msg:
+        flash("Kyseistä viestiä ei ole olemassa")
+        return redirect(url_for("forums"))
+
     if user.id != msg.uid and not user.admin:
-        return redirect(url_for("thread", thr_id=msg.thread))
+        flash("Ei muokkausoikeutta kyseiseen viestiin")
+        return redirect(url_for("forums"))
 
     return render_template("edit_message.html", msg=msg)
 
 @app.route("/save/<int:msg_id>", methods=["POST"])
 def save(msg_id):
     if "username" not in session:
+        flash(config.LOGIN_REQUIRED_MSG)
         return redirect(url_for("signin"))
 
     if session["csrf_token"] != request.form["csrf_token"]:
@@ -369,12 +469,18 @@ def save(msg_id):
     user = users.get_user(session["username"])
     msg = messages.get_msg(msg_id)
 
+    if not msg:
+        flash("Kyseistä viestiä ei ole olemassa")
+        return redirect(url_for("forums"))
+
     if user.id != msg.uid and not user.admin:
-        return redirect(url_for("thread", thr_id=msg.thread))
+        flash("Ei muokkausoikeutta kyseiseen viestiin")
+        return redirect(url_for("forums"))
 
     content = request.form["content"]
 
     if len(content) < 1 or len(content) > 100:
+        flash("Invalid content")
         return redirect(url_for("edit", msg_id=msg_id))
 
     messages.edit_msg(msg_id, content)
@@ -384,6 +490,7 @@ def save(msg_id):
 @app.route("/delete/<int:msg_id>", methods=["POST"])
 def delete(msg_id):
     if "username" not in session:
+        flash(config.LOGIN_REQUIRED_MSG)
         return redirect(url_for("signin"))
 
     if session["csrf_token"] != request.form["csrf_token"]:
@@ -391,9 +498,14 @@ def delete(msg_id):
 
     msg = messages.get_msg(msg_id)
 
+    if not msg:
+        flash("Kyseistä viestiä ei ole olemassa")
+        return redirect(url_for("forums"))
+
     cur_user = users.get_user(session["username"])
     if msg.uid != cur_user.id and not users.is_admin(session["username"]):
-        return redirect(url_for("thread", thr_id=msg.thread))
+        flash("Ei muokkausoikeutta kyseiseen viestiin")
+        return redirect(url_for("forums"))
 
     subforum_id = threads.get_thr(msg.thread).subforum
 
@@ -407,18 +519,34 @@ def delete(msg_id):
 @app.route("/permission/add", methods=["POST"])
 def add_permission():
     if "username" not in session:
+        flash(config.LOGIN_REQUIRED_MSG)
         return redirect(url_for("signin"))
 
     if session["csrf_token"] != request.form["csrf_token"]:
         abort(403)
 
     if not users.is_admin(session["username"]):
+        flash(config.ADMIN_USER_REQUIRED_MSG)
         return redirect(url_for("forums"))
 
     uid = int(request.form["uid"])
     subforum_id = request.form["subforum"]
+    subforum = subforums.get_subforum(subforum_id)
 
-    if users.is_admin(uid) or not subforums.get_subforum(subforum_id).secret:
+    if not subforum:
+        flash("Kyseistä keskustelualuetta ei ole olemassa")
+        return redirect(url_for("forums"))
+
+    if not users.exist(uid):
+        flash("Kyseistä käyttäjää ei ole olemassa")
+        return redirect(url_for("forums"))
+
+    if users.is_admin(uid):
+        flash("Pääkäyttäjillä on jo pääsyoikeus kaikille keskustelualueille")
+        return redirect(url_for("forums"))
+
+    if not subforum.secret:
+        flash("Kyseinen keskustelualue on jo auki kaikille")
         return redirect(url_for("forums"))
 
     permissions.add_permission(uid, subforum_id)
@@ -428,12 +556,14 @@ def add_permission():
 @app.route("/permission/delete", methods=["POST"])
 def delete_permission():
     if "username" not in session:
+        flash(config.LOGIN_REQUIRED_MSG)
         return redirect(url_for("signin"))
 
     if session["csrf_token"] != request.form["csrf_token"]:
         abort(403)
 
     if not users.is_admin(session["username"]):
+        flash(config.ADMIN_USER_REQUIRED_MSG)
         return redirect(url_for("forums"))
 
     uid = request.form["uid"]
@@ -446,14 +576,22 @@ def delete_permission():
 @app.route("/like/<int:msg_id>", methods=["POST"])
 def like(msg_id):
     if "username" not in session:
+        flash(config.LOGIN_REQUIRED_MSG)
         return redirect(url_for("signin"))
 
     if session["csrf_token"] != request.form["csrf_token"]:
         abort(403)
 
-    thr = threads.get_thr(messages.get_msg(msg_id).thread)
+    msg = messages.get_msg(msg_id)
+
+    if not msg:
+        flash("Kyseistä viestiä ei ole olemassa")
+        return redirect(url_for("forums"))
+
+    thr = threads.get_thr(msg.thread)
 
     if not subforums.is_permitted(thr.subforum, session["username"]):
+        flash("Ei pääsyä kyseiselle keskustelualueelle")
         return redirect(url_for("forums"))
 
     likes.like(users.get_user(session["username"]).id, msg_id)
@@ -463,14 +601,22 @@ def like(msg_id):
 @app.route("/dislike/<int:msg_id>", methods=["POST"])
 def dislike(msg_id):
     if "username" not in session:
+        flash(config.LOGIN_REQUIRED_MSG)
         return redirect(url_for("signin"))
 
     if session["csrf_token"] != request.form["csrf_token"]:
         abort(403)
 
-    thr = threads.get_thr(messages.get_msg(msg_id).thread)
+    msg = messages.get_msg(msg_id)
+
+    if not msg:
+        flash("Kyseistä viestiä ei ole olemassa")
+        return redirect(url_for("forums"))
+
+    thr = threads.get_thr(msg.thread)
 
     if not subforums.is_permitted(thr.subforum, session["username"]):
+        flash("Ei pääsyä kyseiselle keskustelualueelle")
         return redirect(url_for("forums"))
 
     likes.dislike(users.get_user(session["username"]).id, msg_id)
@@ -480,14 +626,22 @@ def dislike(msg_id):
 @app.route("/unlike/<int:msg_id>", methods=["POST"])
 def unlike(msg_id):
     if "username" not in session:
+        flash(config.LOGIN_REQUIRED_MSG)
         return redirect(url_for("signin"))
 
     if session["csrf_token"] != request.form["csrf_token"]:
         abort(403)
 
-    thr = threads.get_thr(messages.get_msg(msg_id).thread)
+    msg = messages.get_msg(msg_id)
+
+    if not msg:
+        flash("Kyseistä viestiä ei ole olemassa")
+        return redirect(url_for("forums"))
+
+    thr = threads.get_thr(msg.thread)
 
     if not subforums.is_permitted(thr.subforum, session["username"]):
+        flash("Ei pääsyä kyseiselle keskustelualueelle")
         return redirect(url_for("forums"))
 
     likes.unlike(users.get_user(session["username"]).id, msg_id)
@@ -497,6 +651,7 @@ def unlike(msg_id):
 @app.route("/search", methods=["POST"])
 def search():
     if "username" not in session:
+        flash(config.LOGIN_REQUIRED_MSG)
         return redirect(url_for("signin"))
 
     if session["csrf_token"] != request.form["csrf_token"]:
@@ -505,6 +660,7 @@ def search():
     search_term = request.form["search_term"]
 
     if len(search_term) < 1 or len(search_term) > 100:
+        flash("Invalid search term")
         return redirect(url_for("forums"))
 
     results = messages.search(search_term, session["username"])

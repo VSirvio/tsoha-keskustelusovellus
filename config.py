@@ -4,9 +4,8 @@ DATE_FORMAT = "DD.MM.YYYY klo HH24:MI"
 # Possible values are "newest", "oldest", "most_liked", and "most_disliked"
 DEFAULT_ORDER = "newest"
 
-INVALID_USERNAME_MSG = "Tunnus ei saa sisältää muita merkkejä kuin isot ja " \
-                       "pienet kirjaimet A:sta Ö:hön, numerot (0-9) " \
-                       "ja alaviiva (_)"
-USERNAME_ALLOWED_CHARS = "abcdefghijklmnopqrstuvwxyzåäö" \
-                         "ABCDEFGHIJKLMNOPQRSTUVWXYZÅÄÖ" \
-                         "0123456789_"
+ALLOWED_USERNAME_PATTERN = "[a-zåäöA-ZÅÄÖ0-9_]*"
+
+LOGIN_REQUIRED_MSG = "Toiminto vaatii kirjautumisen"
+
+ADMIN_USER_REQUIRED_MSG = "Kyseinen toiminto on sallittu vain ylläpitäjille"

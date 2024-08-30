@@ -10,58 +10,13 @@
       rel="stylesheet">
 <link rel="stylesheet" href="{{ url_for("static", filename="style.css") }}">
 
-{% macro confirm_modal(name, message, action) %}
-
-  <div class="modal modal-sm fade" id="{{ name }}" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-body">
-
-          <div class="row justify-content-between mb-4">
-
-            <div class="col-auto">
-              <h5>{{ message }}</h5>
-            </div>
-
-            <div class="col-auto">
-              <button type="button" class="btn-close align-top"
-                      data-bs-dismiss="modal">
-              </button>
-            </div>
-
-          </div>
-
-          <div class="row justify-content-end gx-2">
-
-            <div class="col-auto">
-              <form action="{{ action }}" method="POST">
-                <input type="hidden" name="csrf_token"
-                       value="{{ session.csrf_token }}">
-                <button type="submit" class="btn btn-primary">OK</button>
-              </form>
-            </div>
-
-            <div class="col-auto">
-              <button type="button" class="btn btn-secondary"
-                      data-bs-dismiss="modal">
-                Cancel
-              </button>
-            </div>
-
-          </div>
-
-        </div>
-      </div>
-    </div>
-  </div>
-
-{% endmacro %}
+{% from "macros.html" import confirm_modal, error_alert, error_if %}
 
 {{ confirm_modal("logoutModal", "Kirjaudu ulos?", "/logout") }}
 
 <div class="container-fluid">
 
-  <div class="row mt-3">
+  <div class="row mt-3 pb-4">
 
     <div class="col">
       {% block back %}
@@ -72,11 +27,15 @@
     </div>
 
     <div class="col-3">
-      <form action="/search" method="POST">
-        <input type="text" class="form-control" name="search_term"
+      <form class="needs-validation" action="/search" method="POST" novalidate>
+        <input type="text" name="search_term"
+               class="form-control {{ error_if("Invalid search term") }}"
                placeholder="Haku" maxlength="100" required>
         <input type="hidden" name="csrf_token"
                value="{{ session.csrf_token }}">
+        <div class="invalid-feedback">
+          Haettavan tekstin tulee olla 1–100 merkin pituinen
+        </div>
       </form>
     </div>
 
@@ -101,8 +60,22 @@
 
   </div>
 
-  <div class="row justify-content-center">
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+
+      {% for message in messages %}
+        {% if not message.startswith("Invalid ") %}
+          {{ error_alert(message) }}
+        {% endif %}
+      {% endfor %}
+
+    {% endif %}
+  {% endwith %}
+
+  <div class="row justify-content-center pt-3">
     {% block content %}{% endblock %}
   </div>
 
 </div>
+
+<script src="{{ url_for("static", filename="form-validation.js") }}"></script>

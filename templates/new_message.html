@@ -1,18 +1,27 @@
 {% extends "layout.html" %}
 
+{% from "macros.html" import invalid_msg_body %}
+
 {% block previous %}/thread/{{ thr_id }}{% endblock %}
 
 {% block content %}
 
-  <title>Luo uusi viesti</title>
+  <title>Vastaa viestiin</title>
 
   <div class="col-4 mt-5">
 
-    <h3 class="mb-4">Luo uusi viesti</h3>
+    <h3 class="mb-4">Vastaa viestiin</h3>
 
-    <form action="/send/{{ msg_id }}" method="POST">
-      <input type="text" class="form-control mb-3" name="content"
-             maxlength="100" required autofocus>
+    <form class="needs-validation" action="/send/{{ msg_id }}" method="POST"
+          novalidate>
+      <div class="mb-3">
+        <input type="text" name="content"
+               class="form-control {{ error_if("Invalid message") }}"
+               maxlength="100" required autofocus>
+        <div class="invalid-feedback">
+          {{ invalid_msg_body() }}
+        </div>
+      </div>
       <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
       <button type="submit" class="btn btn-primary">Lähetä</button>
     </form>

@@ -1,5 +1,10 @@
 {% extends "layout.html" %}
 
+{%
+  from "macros.html" import
+    allowed_title_pattern, invalid_msg_body, invalid_title_msg
+%}
+
 {% block previous %}/subforum/{{ subforum_id }}{% endblock %}
 
 {% block content %}
@@ -10,18 +15,28 @@
 
     <h3 class="mb-4">Luo keskustelu</h3>
 
-    <form action="/thread/create/{{ subforum_id }}" method="POST">
+    <form class="needs-validation" action="/thread/create/{{ subforum_id }}"
+          method="POST" novalidate>
 
       <div class="mb-3">
         <label for="title" class="form-label">Otsikko</label>
-        <input type="text" class="form-control" id="title" name="title"
-               pattern=".*[^\p{Z}\p{C}].*" maxlength="30" required autofocus>
+        <input type="text" id="title" name="title"
+               class="form-control {{ error_if("Invalid title") }}"
+               pattern="{{ allowed_title_pattern() }}"
+               maxlength="30" required autofocus>
+        <div class="invalid-feedback">
+          {{ invalid_title_msg("otsikko", 30) }}
+        </div>
       </div>
 
       <div class="mb-3">
         <label for="message" class="form-label">Aloitusviesti</label>
-        <input type="text" class="form-control" id="message" name="message"
+        <input type="text" id="message" name="message"
+               class="form-control {{ error_if("Invalid message") }}"
                maxlength="100" required>
+        <div class="invalid-feedback">
+          {{ invalid_msg_body() }}
+        </div>
       </div>
 
       <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
@@ -31,21 +46,5 @@
     </form>
 
   </div>
-
-  <script>
-
-    const title = document.getElementById("title");
-
-    title.addEventListener("input", event => {
-      if (title.validity.patternMismatch) {
-        title.setCustomValidity(
-          "Otsikon tulee sisältää vähintään yksi tulostuva merkki."
-        );
-      } else {
-        title.setCustomValidity("");
-      }
-    });
-
-  </script>
 
 {% endblock %}

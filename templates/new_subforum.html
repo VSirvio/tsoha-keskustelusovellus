@@ -1,27 +1,40 @@
 {% extends "layout.html" %}
 
+{% from "macros.html" import allowed_title_pattern, invalid_title_msg %}
+
 {% block previous %}/forums{% endblock %}
 
 {% block content %}
 
   <title>Luo uusi keskustelualue</title>
 
-  <div class="col-4 mt-5">
+  <div class="col-4 mt-3">
 
     <h3 class="mb-4">Luo keskustelualue</h3>
 
-    <form action="/subforum/create" method="POST">
+    <form class="needs-validation" action="/subforum/create" method="POST"
+          novalidate>
 
       <div class="mb-3">
         <label for="title" class="form-label">Otsikko</label>
-        <input type="text" class="form-control" id="title" name="title"
-               pattern=".*[^\p{Z}\p{C}].*" maxlength="30" required autofocus>
+        <input type="text" id="title" name="title"
+               class="form-control {{ error_if("Invalid title") }}"
+               pattern="{{ allowed_title_pattern() }}"
+               maxlength="30" required autofocus>
+        <div class="invalid-feedback">
+          {{ invalid_title_msg("otsikko", 30) }}
+        </div>
       </div>
 
       <div class="mb-3">
         <label for="description" class="form-label">Kuvaus</label>
-        <input type="text" class="form-control" id="description"
-               name="description" maxlength="100" required>
+        <input type="text" id="description" name="description"
+               class="form-control {{ error_if("Invalid description") }}"
+               pattern="{{ allowed_title_pattern() }}"
+               maxlength="100" required>
+        <div class="invalid-feedback">
+          {{ invalid_title_msg("kuvaus", 100) }}
+        </div>
       </div>
 
       <div class="mb-3 form-check">
@@ -38,20 +51,7 @@
 
   </div>
 
-  <script>
-
-    const title = document.getElementById("title");
-
-    title.addEventListener("input", event => {
-      if (title.validity.patternMismatch) {
-        title.setCustomValidity(
-          "Otsikon tulee sisältää vähintään yksi tulostuva merkki."
-        );
-      } else {
-        title.setCustomValidity("");
-      }
-    });
-
+  <script src="{{ url_for("static", filename="form-validation.js") }}">
   </script>
 
 {% endblock %}

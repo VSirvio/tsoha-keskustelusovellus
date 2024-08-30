@@ -1,9 +1,9 @@
 {% macro error_alert(msg) %}
 
-  <div class="row justify-content-center mt-2">
+  <div class="row justify-content-center">
     <div class="col-auto">
 
-      <div class="alert alert-danger alert-dismissible fade show mb-0"
+      <div class="alert alert-danger alert-dismissible fade show mb-2"
            role="alert">
 
         <div class="px-2">{{ msg }}</div>
@@ -17,3 +17,78 @@
   </div>
 
 {% endmacro %}
+
+{% macro confirm_modal(name, message, action) %}
+
+  <div class="modal modal-sm fade" id="{{ name }}" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-body">
+
+          <div class="row justify-content-between mb-4">
+
+            <div class="col-auto">
+              <h5>{{ message }}</h5>
+            </div>
+
+            <div class="col-auto">
+              <button type="button" class="btn-close align-top"
+                      data-bs-dismiss="modal">
+              </button>
+            </div>
+
+          </div>
+
+          <div class="row justify-content-end gx-2">
+
+            <div class="col-auto">
+              <form action="{{ action }}" method="POST">
+                <input type="hidden" name="csrf_token"
+                       value="{{ session.csrf_token }}">
+                <button type="submit" class="btn btn-primary">OK</button>
+              </form>
+            </div>
+
+            <div class="col-auto">
+              <button type="button" class="btn btn-secondary"
+                      data-bs-dismiss="modal">
+                Cancel
+              </button>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% endmacro %}
+
+{% macro whitespace_preserved(text) %}
+  {% autoescape false %}
+    <span style="white-space: pre-wrap">{{ text }}</span>
+  {% endautoescape %}
+{% endmacro %}
+
+{% macro error_if(msg) %}
+  {% if msg in get_flashed_messages() %}
+    is-invalid
+  {% endif %}
+{% endmacro %}
+
+{% macro invalid_username_msg() %}
+  Anna tunnus, jossa on yhteensä 5–30 merkkiä seuraavista luokista: isot ja
+  pienet kirjaimet A:sta Ö:hön, numerot 0–9 ja alaviiva (_)
+{% endmacro %}
+
+{% macro invalid_title_msg(field_name, max_len) %}
+  Anna {{ field_name }}, jossa on enintään {{ max_len }} merkkiä ja vähintään
+  yksi merkki, joka ei ole välilyönti tai muu tyhjä merkki
+{% endmacro %}
+
+{% macro invalid_msg_body() %}
+  Kirjoita viesti, jossa on enintään 100 merkkiä
+{% endmacro %}
+
+{% macro allowed_title_pattern() %}.*[^\p{Z}\p{C}].*{% endmacro %}

@@ -1,5 +1,7 @@
 {% extends "layout.html" %}
 
+{% from "macros.html" import whitespace_preserved %}
+
 {% macro msg_view(message, depth=0) %}
 
   {{
@@ -51,7 +53,7 @@
 
       <div class="row">
         <div class="col">
-          {{ message.content }}
+          {{ whitespace_preserved(message.content) }}
         </div>
       </div>
 

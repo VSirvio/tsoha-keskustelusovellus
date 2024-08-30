@@ -1,5 +1,7 @@
 {% extends "layout.html" %}
 
+{% from "macros.html" import allowed_title_pattern, invalid_title_msg %}
+
 {% block previous %}/thread/{{ thr.id }}{% endblock %}
 
 {% block content %}
@@ -18,13 +20,18 @@
 
     <h3 class="mb-4">Muokkaa keskustelua</h3>
 
-    <form action="/thread/save/{{ thr.id }}" method="POST">
+    <form class="needs-validation" action="/thread/save/{{ thr.id }}"
+          method="POST" novalidate>
 
       <div class="mb-3">
         <label for="title" class="form-label">Otsikko</label>
-        <input type="text" class="form-control" id="title" name="title"
-               value="{{ thr.title }}" pattern=".*[^\p{Z}\p{C}].*"
+        <input type="text" id="title" name="title"
+               class="form-control {{ error_if("Invalid title") }}"
+               value="{{ thr.title }}" pattern="{{ allowed_title_pattern() }}"
                maxlength="30" required autofocus>
+        <div class="invalid-feedback">
+          {{ invalid_title_msg("otsikko", 30) }}
+        </div>
       </div>
 
       <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
@@ -39,21 +46,5 @@
     </button>
 
   </div>
-
-  <script>
-
-    const title = document.getElementById("title");
-
-    title.addEventListener("input", event => {
-      if (title.validity.patternMismatch) {
-        title.setCustomValidity(
-          "Otsikon tulee sisältää vähintään yksi tulostuva merkki."
-        );
-      } else {
-        title.setCustomValidity("");
-      }
-    });
-
-  </script>
 
 {% endblock %}

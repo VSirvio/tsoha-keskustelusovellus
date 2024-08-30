@@ -6,10 +6,10 @@
 
   <title>Keskustelualueet</title>
 
-  <div class="col-4 mt-3">
+  <div class="col-4">
 
     <div class="row justify-content-center">
-      <div class="col-auto mt-5 mb-1">
+      <div class="col-auto mb-1">
 
         <h3 class="d-inline">Keskustelualueet</h3>
 
@@ -62,7 +62,9 @@
 
           {% else %}
 
-            <span class="small text-black-50">–</span>
+            {% if subforum.latest %}
+              <span class="small text-black-50">–</span>
+            {% endif %}
 
           {% endif %}
 

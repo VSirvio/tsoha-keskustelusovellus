@@ -1,6 +1,10 @@
 from sqlalchemy.sql import text
 from db import db
 
+def exist(uid : int):
+    sql = text("SELECT id FROM users WHERE id = :uid")
+    return bool(db.session.execute(sql, {"uid": uid}).fetchone())
+
 def get_user(username : str):
     sql = text(
         "SELECT id, password, admin FROM users WHERE username = :username"
