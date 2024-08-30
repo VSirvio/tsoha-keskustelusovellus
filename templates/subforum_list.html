@@ -48,12 +48,12 @@
 
             {% if subforum.secret %}
               <a class="align-bottom ms-1"
-                 href="/subforum/edit/{{ subforum.id }}">
+                 href="/subforum/edit/{{ subforum.id }}" title="Muokkaa">
                 <i class="bi bi-pencil"></i>
               </a>
             {% endif %}
 
-            <button type="button"
+            <button type="button" title="Poista"
                     class="btn btn-link align-bottom p-0 border-0"
                     data-bs-toggle="modal"
                     data-bs-target="#deletionModal{{ subforum.id }}">

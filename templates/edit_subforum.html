@@ -24,7 +24,8 @@
             <input type="hidden" name="subforum" value="{{ subforum_id }}">
             <input type="hidden" name="csrf_token"
                    value="{{ session.csrf_token }}">
-            <button type="submit" class="btn btn-outline-success">
+            <button type="submit" class="btn btn-outline-success"
+                    title="Klikkaa estääksesi käyttäjä">
               {{ user.username }}
             </button>
           </form>
@@ -58,7 +59,8 @@
             <input type="hidden" name="subforum" value="{{ subforum_id }}">
             <input type="hidden" name="csrf_token"
                    value="{{ session.csrf_token }}">
-            <button type="submit" class="btn btn-outline-danger">
+            <button type="submit" class="btn btn-outline-danger"
+                    title="Klikkaa salliaksesi käyttäjä">
               {{ user.username }}
             </button>
           </form>
