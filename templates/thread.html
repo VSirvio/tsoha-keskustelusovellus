@@ -2,6 +2,30 @@
 
 {% from "macros.html" import whitespace_preserved %}
 
+{% macro thumb_view(msg_id, icon1, action1, icon2, action2) %}
+
+  <div class="col-auto">
+    <form action="/{{ action1 }}/{{ msg_id }}" method="POST">
+      <input type="hidden" name="csrf_token"
+             value="{{ session.csrf_token }}">
+      <button type="submit" class="btn btn-link border-0 p-0">
+        <i class="bi bi-{{ icon1 }}"></i>
+      </button>
+    </form>
+  </div>
+
+  <div class="col-auto">
+    <form action="/{{ action2 }}/{{ msg_id }}" method="POST">
+      <input type="hidden" name="csrf_token"
+             value="{{ session.csrf_token }}">
+      <button type="submit" class="btn btn-link border-0 p-0">
+        <i class="bi bi-{{ icon2 }}"></i>
+      </button>
+    </form>
+  </div>
+
+{% endmacro %}
+
 {% macro msg_view(message, depth=0) %}
 
   {{
@@ -70,39 +94,34 @@
           </span>
         </div>
 
-        {% if message.liked %}
+        {% if message.own_like == 1 %}
 
-          <div class="col-auto">
-            <form action="/unlike/{{ message.id }}" method="POST">
-              <input type="hidden" name="csrf_token"
-                     value="{{ session.csrf_token }}">
-              <button type="submit" class="btn btn-link border-0 p-0">
-                Poista tykkäys
-              </button>
-            </form>
-          </div>
+          {{
+            thumb_view(
+              message.id,
+              "hand-thumbs-up-fill", "unlike",
+              "hand-thumbs-down", "dislike"
+            )
+          }}
+
+        {% elif message.own_like == -1 %}
+
+          {{
+            thumb_view(
+              message.id,
+              "hand-thumbs-up", "like",
+              "hand-thumbs-down-fill", "unlike"
+            )
+          }}
 
         {% else %}
 
-          <div class="col-auto">
-            <form action="/like/{{ message.id }}" method="POST">
-              <input type="hidden" name="csrf_token"
-                     value="{{ session.csrf_token }}">
-              <button type="submit" class="btn btn-link border-0 p-0">
-                <i class="bi bi-hand-thumbs-up"></i>
-              </button>
-            </form>
-          </div>
-
-          <div class="col-auto">
-            <form action="/dislike/{{ message.id }}" method="POST">
-              <input type="hidden" name="csrf_token"
-                     value="{{ session.csrf_token }}">
-              <button type="submit" class="btn btn-link border-0 p-0">
-                <i class="bi bi-hand-thumbs-down"></i>
-              </button>
-            </form>
-          </div>
+          {{ thumb_view(
+              message.id,
+              "hand-thumbs-up", "like",
+              "hand-thumbs-down", "dislike"
+            )
+          }}
 
         {% endif %}
 
