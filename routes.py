@@ -49,6 +49,9 @@ def logout():
         abort(403)
 
     del session["username"]
+    del session["csrf_token"]
+    if "prev_order" in session:
+        del session["prev_order"]
 
     return redirect(url_for("signin"))
 
@@ -243,7 +246,16 @@ def thread(thr_id):
 
     order_by = request.args.get("order_by")
     if order_by not in ["newest", "oldest", "most_liked", "most_disliked"]:
-        order_by = config.DEFAULT_ORDER
+        if "prev_order" in session and str(thr_id) in session["prev_order"]:
+            order_by = session["prev_order"][str(thr_id)]
+        else:
+            order_by = config.DEFAULT_ORDER
+
+    if not "prev_order" in session:
+        session["prev_order"] = {}
+
+    session["prev_order"][str(thr_id)] = order_by
+    session.modified = True
 
     user = users.get_user(session["username"])
     msgs = messages.get_tree(thr.first_msg, user.id, order_by)
