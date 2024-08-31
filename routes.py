@@ -40,6 +40,7 @@ def login():
 
     session["username"] = username
     session["csrf_token"] = secrets.token_hex(16)
+    session["prev_order"] = {}
 
     return redirect(url_for("forums"))
 
@@ -50,8 +51,7 @@ def logout():
 
     del session["username"]
     del session["csrf_token"]
-    if "prev_order" in session:
-        del session["prev_order"]
+    del session["prev_order"]
 
     return redirect(url_for("signin"))
 
@@ -97,6 +97,7 @@ def register():
 
     session["username"] = username
     session["csrf_token"] = secrets.token_hex(16)
+    session["prev_order"] = {}
 
     return redirect(url_for("forums"))
 
@@ -250,9 +251,6 @@ def thread(thr_id):
             order_by = session["prev_order"][str(thr_id)]
         else:
             order_by = config.DEFAULT_ORDER
-
-    if not "prev_order" in session:
-        session["prev_order"] = {}
 
     session["prev_order"][str(thr_id)] = order_by
     session.modified = True
