@@ -12,9 +12,9 @@ def get_tree(root_msg : int, cur_user : int, order_by : str):
         case "oldest":
             order = "sent ASC"
         case "most_liked":
-            order = "likes DESC"
+            order = "likes DESC, sent DESC"
         case "most_disliked":
-            order = "likes ASC"
+            order = "likes ASC, sent DESC"
 
     sql = text(
         "SELECT M.id, M.content, U.username AS user, M.sent,"

@@ -9,9 +9,9 @@ def get_thrs(subforum_id : int, order_by : str):
         case "oldest":
             order = "last_msg ASC"
         case "most_liked":
-            order = "first_msg_likes DESC"
+            order = "first_msg_likes DESC, last_msg DESC"
         case "most_disliked":
-            order = "first_msg_likes ASC"
+            order = "first_msg_likes ASC, last_msg DESC"
 
     sql = text(
         "SELECT T.id, T.title, MAX(M.sent) AS last_msg,"
