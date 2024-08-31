@@ -156,12 +156,12 @@ def create_subforum():
         flash(config.LOGIN_REQUIRED_MSG)
         return redirect(url_for("signin"))
 
+    if session["csrf_token"] != request.form["csrf_token"]:
+        abort(403)
+
     if not users.is_admin(session["username"]):
         flash(config.ADMIN_USER_REQUIRED_MSG)
         return redirect(url_for("forums"))
-
-    if session["csrf_token"] != request.form["csrf_token"]:
-        abort(403)
 
     title = request.form["title"]
     desc = request.form["description"]
@@ -195,12 +195,12 @@ def edit_subforum(subforum_id):
         flash(config.LOGIN_REQUIRED_MSG)
         return redirect(url_for("signin"))
 
-    if not users.is_admin(session["username"]):
-        flash(config.ADMIN_USER_REQUIRED_MSG)
-        return redirect(url_for("forums"))
-
     if not subforums.get_subforum(subforum_id):
         flash("Kyseistä keskustelualuetta ei ole olemassa")
+        return redirect(url_for("forums"))
+
+    if not users.is_admin(session["username"]):
+        flash(config.ADMIN_USER_REQUIRED_MSG)
         return redirect(url_for("forums"))
 
     permitted = permissions.get_permitted_users(subforum_id)
@@ -326,12 +326,13 @@ def edit_thr(thr_id):
         flash(config.LOGIN_REQUIRED_MSG)
         return redirect(url_for("signin"))
 
-    is_admin = users.is_admin(session["username"])
     thr = threads.get_thr(thr_id)
 
     if not thr:
         flash("Kyseistä keskustelua ei ole olemassa")
         return redirect(url_for("forums"))
+
+    is_admin = users.is_admin(session["username"])
 
     if session["username"] != thr.username and not is_admin:
         flash("Ei muokkausoikeutta kyseiseen keskusteluun")
@@ -348,12 +349,13 @@ def save_thr(thr_id):
     if session["csrf_token"] != request.form["csrf_token"]:
         abort(403)
 
-    is_admin = users.is_admin(session["username"])
     thr = threads.get_thr(thr_id)
 
     if not thr:
         flash("Kyseistä keskustelua ei ole olemassa")
         return redirect(url_for("forums"))
+
+    is_admin = users.is_admin(session["username"])
 
     if session["username"] != thr.username and not is_admin:
         flash("Ei muokkausoikeutta kyseiseen keskusteluun")
@@ -381,12 +383,13 @@ def delete_thr(thr_id):
     if session["csrf_token"] != request.form["csrf_token"]:
         abort(403)
 
-    is_admin = users.is_admin(session["username"])
     thr = threads.get_thr(thr_id)
 
     if not thr:
         flash("Kyseistä keskustelua ei ole olemassa")
         return redirect(url_for("forums"))
+
+    is_admin = users.is_admin(session["username"])
 
     if session["username"] != thr.username and not is_admin:
         flash("Ei muokkausoikeutta kyseiseen keskusteluun")
@@ -454,12 +457,13 @@ def edit(msg_id):
         flash(config.LOGIN_REQUIRED_MSG)
         return redirect(url_for("signin"))
 
-    user = users.get_user(session["username"])
     msg = messages.get_msg(msg_id)
 
     if not msg:
         flash("Kyseistä viestiä ei ole olemassa")
         return redirect(url_for("forums"))
+
+    user = users.get_user(session["username"])
 
     if user.id != msg.uid and not user.admin:
         flash("Ei muokkausoikeutta kyseiseen viestiin")
@@ -476,12 +480,13 @@ def save(msg_id):
     if session["csrf_token"] != request.form["csrf_token"]:
         abort(403)
 
-    user = users.get_user(session["username"])
     msg = messages.get_msg(msg_id)
 
     if not msg:
         flash("Kyseistä viestiä ei ole olemassa")
         return redirect(url_for("forums"))
+
+    user = users.get_user(session["username"])
 
     if user.id != msg.uid and not user.admin:
         flash("Ei muokkausoikeutta kyseiseen viestiin")
@@ -513,6 +518,7 @@ def delete(msg_id):
         return redirect(url_for("forums"))
 
     cur_user = users.get_user(session["username"])
+
     if msg.uid != cur_user.id and not users.is_admin(session["username"]):
         flash("Ei muokkausoikeutta kyseiseen viestiin")
         return redirect(url_for("forums"))
