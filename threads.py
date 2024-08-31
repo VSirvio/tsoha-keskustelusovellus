@@ -1,7 +1,8 @@
 from sqlalchemy.sql import text
-from db import db
+
 import config
 import messages
+from db import db
 
 def get_thrs(subforum_id : int, order_by : str):
     order = "last_msg DESC"

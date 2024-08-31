@@ -1,6 +1,7 @@
 from sqlalchemy.sql import text
-from db import db
+
 import config
+from db import db
 
 def get_msg(msg_id : int):
     sql = text("SELECT id, content, thread, uid FROM messages WHERE id = :id")

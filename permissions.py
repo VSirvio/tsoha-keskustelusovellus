@@ -1,4 +1,5 @@
 from sqlalchemy.sql import text
+
 from db import db
 
 def get_permitted_users(subforum_id : int):

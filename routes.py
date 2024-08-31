@@ -1,10 +1,11 @@
 import re
 import secrets
 import unicodedata
-from flask import flash, render_template, redirect, abort, request, session, \
-                  url_for
+
+from flask import abort, flash, redirect, render_template, \
+                  request, session, url_for
 from werkzeug.security import check_password_hash, generate_password_hash
-from app import app
+
 import config
 import likes
 import messages
@@ -12,6 +13,7 @@ import permissions
 import subforums
 import threads
 import users
+from app import app
 from utils import is_printable, nonprintable_chars_to_whitespace
 
 @app.route("/")

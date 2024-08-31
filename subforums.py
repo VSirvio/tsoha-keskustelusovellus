@@ -1,6 +1,7 @@
 from sqlalchemy.sql import text
-from db import db
+
 import config
+from db import db
 
 def get_subforums(cur_username : str):
     sql = text(
