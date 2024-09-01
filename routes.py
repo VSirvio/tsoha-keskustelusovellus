@@ -548,9 +548,9 @@ def add_permission():
 
     uid = int(request.form["uid"])
     subforum_id = request.form["subforum"]
-    subforum = subforums.get_subforum(subforum_id)
+    subforum_data = subforums.get_subforum(subforum_id)
 
-    if not subforum:
+    if not subforum_data:
         flash("Kyseistä keskustelualuetta ei ole olemassa")
         return redirect(url_for("forums"))
 
@@ -562,7 +562,7 @@ def add_permission():
         flash("Pääkäyttäjillä on jo pääsyoikeus kaikille keskustelualueille")
         return redirect(url_for("forums"))
 
-    if not subforum.secret:
+    if not subforum_data.secret:
         flash("Kyseinen keskustelualue on jo auki kaikille")
         return redirect(url_for("forums"))
 
