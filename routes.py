@@ -224,6 +224,7 @@ def delete_subforum(subforum_id):
         return redirect(url_for("forums"))
 
     if not users.is_admin(session["username"]):
+        flash(config.ADMIN_USER_REQUIRED_MSG)
         return redirect(url_for("forums"))
 
     subforums.delete_subforum(subforum_id)
