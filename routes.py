@@ -550,20 +550,23 @@ def add_permission():
     subforum_id = request.form["subforum"]
     subforum_data = subforums.get_subforum(subforum_id)
 
-    if not subforum_data:
-        flash("Kyseistä keskustelualuetta ei ole olemassa")
-        return redirect(url_for("forums"))
+    error = False
 
     if not users.exist(uid):
         flash("Kyseistä käyttäjää ei ole olemassa")
-        return redirect(url_for("forums"))
-
-    if users.is_admin(uid):
+        error = True
+    elif users.is_admin(uid):
         flash("Pääkäyttäjillä on jo pääsyoikeus kaikille keskustelualueille")
-        return redirect(url_for("forums"))
+        error = True
 
-    if not subforum_data.secret:
+    if not subforum_data:
+        flash("Kyseistä keskustelualuetta ei ole olemassa")
+        error = True
+    elif not subforum_data.secret:
         flash("Kyseinen keskustelualue on jo auki kaikille")
+        error = True
+
+    if error:
         return redirect(url_for("forums"))
 
     permissions.add_permission(uid, subforum_id)
