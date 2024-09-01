@@ -249,7 +249,7 @@ def thread(thr_id):
 
     order_by = request.args.get("order_by")
     if order_by not in ["newest", "oldest", "most_liked", "most_disliked"]:
-        if "prev_order" in session and str(thr_id) in session["prev_order"]:
+        if str(thr_id) in session["prev_order"]:
             order_by = session["prev_order"][str(thr_id)]
         else:
             order_by = config.DEFAULT_ORDER
