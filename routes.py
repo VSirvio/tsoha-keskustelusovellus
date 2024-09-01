@@ -1,6 +1,5 @@
 import re
 import secrets
-import unicodedata
 
 from flask import abort, flash, redirect, render_template, \
                   request, session, url_for
