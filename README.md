@@ -1,5 +1,7 @@
 # Keskustelusovellus
 
+**Testattu Pythonin versiolla 3.12, toimivuudesta muilla versioilla ei takeita**
+
 Sovelluksessa näkyy keskustelualueita, joista jokaisella on tietty aihe. Alueilla on keskusteluketjuja, jotka muodostuvat viesteistä. Jokainen viesti on joko keskusteluketjun aloitusviesti tai vastaus toiseen viestiin. Jokainen käyttäjä on peruskäyttäjä tai ylläpitäjä.
 
 Sovelluksen ominaisuuksia:
